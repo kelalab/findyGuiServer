@@ -1,0 +1,14 @@
+[
+    {
+      "otherParty": "Pankki",
+      "newItem": true
+    },
+    {
+      "otherParty": "Sähköyhtiö",
+      "newItem": true
+    },
+    {
+      "otherParty": "Kela",
+      "newItem": true
+    }
+  ]

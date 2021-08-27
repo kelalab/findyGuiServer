@@ -1,0 +1,12 @@
+{
+    "compilerOptions": {
+        "module": "es2020",
+        "moduleResolution": "node",
+        "esModuleInterop": true,
+        "target": "es6",
+        "outDir": "./bin"
+    },
+    "exclude": [
+        "node_modules"
+    ]
+}

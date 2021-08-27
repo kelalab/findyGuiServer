@@ -1,0 +1,23 @@
+[
+    {
+      "title": "Autolaina",
+      "archived": false
+    },
+    {
+      "title": "Tiliote",
+      "archived": false,
+      "newItem": true
+    },
+    {
+      "title": "Pankkisuhde",
+      "archived": true
+    },
+    {
+      "title": "Tutkintotodistus",
+      "newItem": true
+    },
+    {
+      "title": "Sähkölasku",
+      "newItem": true
+    }
+  ]
