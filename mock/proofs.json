@@ -14,10 +14,12 @@
     },
     {
       "title": "Tutkintotodistus",
+      "archived": false,
       "newItem": true
     },
     {
       "title": "Sähkölasku",
+      "archived": false,
       "newItem": true
     }
   ]

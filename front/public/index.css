@@ -1,0 +1,42 @@
+#root{
+    display: flex;
+    flex: 1;
+    border-bottom-left-radius: 3.5vh;
+    border-bottom-right-radius: 3.5vh;
+    margin-bottom: 0px;
+    overflow: hidden;
+}
+#phoneframe{
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    margin: auto;
+    /*max-width: 35.5vw;*/
+    max-width: 43vh;
+    /*height: 76.5vw;*/
+    height: 92.5vh;
+    /*padding: 1.7vw;*/
+    padding: 2vh;
+    background-image: url(./phone.svg);
+    background-size: cover;
+}
+
+#topbar{
+    height: 4.5vh;
+    margin: -1px;
+    background: #003580;
+    color: white;
+    border-top-right-radius: 4.5vw;
+    border-top-left-radius: 4.5vw;
+    z-index: -1;
+}
+
+#clock {
+    margin-top: 1.5vh;
+    margin-left: 4vh;
+    font-size: 2.5vh;
+}
+
+#bottomsafearea{
+    height: 2vh;
+}

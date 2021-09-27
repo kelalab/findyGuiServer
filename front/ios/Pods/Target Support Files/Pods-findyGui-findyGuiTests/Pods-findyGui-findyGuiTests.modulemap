@@ -1,0 +1,6 @@
+module Pods_findyGui_findyGuiTests {
+  umbrella header "Pods-findyGui-findyGuiTests-umbrella.h"
+
+  export *
+  module * { export * }
+}

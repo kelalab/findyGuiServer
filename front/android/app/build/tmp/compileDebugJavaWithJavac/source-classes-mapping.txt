@@ -1,0 +1,14 @@
+com/findygui/MainApplication.java
+ com.findygui.MainApplication
+ com.findygui.MainApplication$1
+com/findygui/ReactNativeFlipper.java
+ com.findygui.ReactNativeFlipper
+ com.findygui.ReactNativeFlipper$1
+ com.findygui.ReactNativeFlipper$2
+ com.findygui.ReactNativeFlipper$2$1
+com/findygui/BuildConfig.java
+ com.findygui.BuildConfig
+com/facebook/react/PackageList.java
+ com.facebook.react.PackageList
+com/findygui/MainActivity.java
+ com.findygui.MainActivity

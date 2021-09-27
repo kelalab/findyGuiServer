@@ -8,8 +8,14 @@ import socket from './websocket.js';
 import fetch from 'node-fetch';
 import fs from 'fs';
 
-const port = 4000;
 const io = new Server(server);
+const args = process.argv.slice(2);
+const port_arg = args.find(arg => {
+    console.log(arg.split('=')[0]);
+    return arg.split('=')[0]==='port';
+});
+const port = port_arg && port_arg.split('=')[1] || 4000;
+console.log(port);
 
 const agency_url = 'http://13.79.168.138:8080';
 
@@ -103,26 +109,33 @@ interface WalletResponse {
     token: String
 }
     
+try{
+    getStatus().then((response:any) => {
+        console.log(response);
+        const wallet_name = 'Testi_Anna_Lompakko';
+        try{
+            if (response.status === 200) {
+                console.log('connection ok');
+                createWallet(wallet_name).then(walletresponse => {
+                    console.log(walletresponse);
+                    if (walletresponse.status === 200) {
+                        walletresponse.json().then((json:WalletResponse) => {
+                            console.log('json', json);
+                            const token:String = json.token;
 
-getStatus().then((response:any) => {
-    console.log(response);
-    const wallet_name = 'Testi_Anna_Lompakko';
-    if (response.status === 200) {
-        console.log('connection ok');
-        createWallet(wallet_name).then(walletresponse => {
-            console.log(walletresponse);
-            if (walletresponse.status === 200) {
-                walletresponse.json().then((json:WalletResponse) => {
-                    console.log('json', json);
-                    const token:String = json.token;
-
-                });
-            } else {
-                openSesame(wallet_name);
+                        });
+                    } else {
+                        openSesame(wallet_name);
+                    }
+                })
             }
-        })
-    }
-});
+        }catch(e){
+            console.log(e);
+        }
+    });
+}catch(error){
+    console.error('no connection to ledger');
+}
 
 const openSesame = async(wallet_name: String) => {
     const wallets:any = await getWallets(wallet_name);
@@ -138,6 +151,8 @@ const openSesame = async(wallet_name: String) => {
 socket(io);
 
 app.use('/api', apiRouter);
+
+app.use(express.static('front/build'));
 
 server.listen(port, () => {
     console.log(`server listening on port ${port}.`);

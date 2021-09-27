@@ -1,14 +1,22 @@
 [
     {
-      "otherParty": "Pankki",
-      "newItem": true
+      "otherParty": "Korvatunturin Ammattikorkeakoulu",
+      "newItem": true,
+      "id": 0
     },
     {
-      "otherParty": "Sähköyhtiö",
-      "newItem": true
+      "otherParty": "Virta-opintotietopalvelu",
+      "newItem": true,
+      "id": 1
     },
     {
       "otherParty": "Kela",
-      "newItem": true
+      "newItem": true,
+      "id": 2
+    },
+    {
+      "otherParty": "Pankki",
+      "newItem": true,
+      "id": 3
     }
   ]
