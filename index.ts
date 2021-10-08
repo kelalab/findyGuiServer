@@ -55,11 +55,14 @@ const getWallet = async (id?: String) => {
 }
 
 const createDid = async (token: String) => {
-    const response = await fetch(`${agency_url}`, {
+    const response = await fetch(`${agency_url}/wallet/did/create`, {
+        method: 'POST',
         headers: {
             'Authorization': `Bearer ${token}`
         }
     });
+    const json = await response.json();
+    return json;
 }
 
 const getStatus = async () => {
@@ -122,7 +125,7 @@ try{
                         walletresponse.json().then((json:WalletResponse) => {
                             console.log('json', json);
                             const token:String = json.token;
-
+                            openSesame(wallet_name, token);
                         });
                     } else {
                         openSesame(wallet_name);
@@ -137,14 +140,21 @@ try{
     console.error('no connection to ledger');
 }
 
-const openSesame = async(wallet_name: String) => {
-    const wallets:any = await getWallets(wallet_name);
-    const mywallet = wallets.results[0];
-    console.log(mywallet);
-    console.log('wallet', mywallet);
-    await getWallet(mywallet.wallet_id);
-    const token = await getToken(mywallet.wallet_id);
-    console.log('token acquired: ', token);
+const openSesame = async(wallet_name: String, tkn?: String) => {
+    let token;
+    if(!tkn){
+        const wallets:any = await getWallets(wallet_name);
+        const mywallet = wallets.results[0];
+        console.log(mywallet);
+        console.log('wallet', mywallet);
+        await getWallet(mywallet.wallet_id);
+        token = await getToken(mywallet.wallet_id);
+        console.log('token acquired: ', token);
+    }else {
+        token = tkn;
+    }
+    const did = await createDid(token);
+    console.log('did', did);
 }
 
 /** init websocket stuff */
