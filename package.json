@@ -4,6 +4,8 @@
         "dev_front": "cd front && npm run watch",
         "dev_all": "concurrently \"npm run dev_front\" \"npm run dev port=3000\" ",
         "dev": "nodemon index.ts ",
+        "virta": "nodemon virta.ts",
+        "mika": "nodemon mika.ts",
         "build": "tsc",
         "start": "npm run build && node bin/index.js",
         "lint": "eslint . --ext .ts"
@@ -20,6 +22,7 @@
     },
     "dependencies": {
         "express": "^4.17.1",
+        "express-session": "^1.17.2",
         "node-fetch": "^3.0.0",
         "socket.io": "^4.1.3"
     },

@@ -1,0 +1,9 @@
+FROM node:16-slim
+WORKDIR /src
+COPY webhook.ts index.ts
+COPY package.json package.json
+COPY tsconfig.json tsconfig.json
+RUN npm i && \
+npm run build && \
+ls -lha
+ENTRYPOINT [ "node",  "bin/index.js" ]
