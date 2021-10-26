@@ -2,9 +2,7 @@ import express from 'express';
 import { createServer } from 'http';
 const app = express();
 const server = createServer(app);
-import { Server } from 'socket.io';
 
-const io = new Server(server);
 const args = process.argv.slice(2);
 const port_arg = args.find(arg => {
     console.log(arg.split('=')[0]);
@@ -14,14 +12,8 @@ const port = port_arg && port_arg.split('=')[1] || '4000';
 let unusedport = port;
 console.log(port);
 
-/** init websocket stuff */
-io.on('connection', (socket) => {
-    console.log('websocket client connected');
-    socket.send('hi');
-    socket.on('message', async(data) => {
-        console.log('message', data);
-    })
-});
+app.use(express.json());
+app.use(express.urlencoded({extended:false}));
 
 app.use('/webhook', async(req,res,next) => {
     console.log('received something', req);
