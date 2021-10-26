@@ -25,6 +25,9 @@ io.on('connection', (socket) => {
 
 app.use('/webhook', async(req,res,next) => {
     console.log('received something', req);
+    const walletId = req.headers['x-wallet-id'];
+    const data = JSON.parse(req.body);
+    console.log('wallet: ', walletId, 'data:', data);
     next();
 });
 app.use(express.static('front/build'));
