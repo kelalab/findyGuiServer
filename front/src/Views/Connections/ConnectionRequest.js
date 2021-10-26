@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Button, Text, Dimensions, View } from "react-native"
-import styled from 'styled-components';
+import styled from 'styled-components/native';
 import { H2 } from '../../Components/fonts';
 import { PRIMARY_BLUE, PRIMARY_YELLOW } from '../../Config';
 

@@ -1,9 +1,24 @@
 <html>
 <body>
     <h1>Findy käyttäjä</h1>
-    <form action="/accept-invitation" method="post">
+    <form action="/accept-invitation" target="hiddenFrame" method="post">
         <textarea name="invitation" id="invitation"></textarea>
         <input type="submit" value="Hyväksy kutsu"/>
     </form>
+    <form>
+        <input/>
+        <input type="button" id="sendmsg" value="Lähetä viesti" />
+    </form>
+    <script type="text/javascript">
+            let btn = document.getElementById('sendmsg');
+            btn.onclick = async function(evt){
+                console.log('clicked');
+                let resp = await fetch('/api/send_message');
+                let json_as_text = await resp.text();
+                let inv_area = document.getElementById('invitation');
+                inv_area.value = json_as_text;
+            }
+    </script>
+    <iframe name="hiddenFrame" width="0" height="0" border="0" style="display: none;"></iframe>
 </body>
 </html>

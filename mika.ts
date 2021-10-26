@@ -12,6 +12,7 @@ const server = createServer(app);
 import { Server } from 'socket.io';
 import socket from './websocket.js';
 import fetch from 'node-fetch';
+import { getDid } from './api.js';
 import fs from 'fs';
 
 const io = new Server(server);
@@ -76,31 +77,7 @@ const getWallet = async (id?: String) => {
     return json;
 }
 
-const getDid = async (token: String) => {
-    const create = false;
-    const existing_res = await fetch(`${agency_url}/wallet/did`,{
-        headers: {
-            'Authorization': `Bearer ${token}`,
-        }
-    });
-    const existing:any = await existing_res.json();
-    if(existing){
-        console.log('existing dids: ', existing);
-        const resultarray = existing.results;
-        return resultarray[0];
-    }
-    //return null;
-    if(create){
-        const response = await fetch(`${agency_url}/wallet/did/create`, {
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${token}`
-            }
-        });
-        const json = await response.json();
-        return json;
-    }
-}
+
 
 const getStatus = async () => {
     try {
@@ -169,7 +146,7 @@ interface WalletResponse {
 let token;
 
 const main = async() => {
-    const name = 'Powah';
+    const name = 'Mika';
     const response = await getStatus();
     console.log('status', response.status);
     const wallet_name = `Testi_${name}_Lompakko`;
@@ -177,8 +154,10 @@ const main = async() => {
         console.log('connection ok');
     }
     const existing_wallet = (await getWallets(wallet_name)).results[0];
-    let walletid = existing_wallet.wallet_id;
+    let walletid;
     if(existing_wallet){
+        const all_wallet_info = await getWallet(existing_wallet.wallet_id);
+        walletid = existing_wallet.wallet_id;
         const wallet_id = existing_wallet.wallet_id;
         console.log('existing wallet', wallet_id);
         token = await getToken(wallet_id);
@@ -191,8 +170,10 @@ const main = async() => {
     }
     console.log('token', token);
     const did:any = await getDid(token);
-    console.log('did', did.did);
-    const connections = await getConnections(token, did.did);
+    if(did){
+        console.log('did', did.did);
+        const connections = await getConnections(token, did.did);
+    }
 }
 
 main();

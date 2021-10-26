@@ -1,6 +1,6 @@
 import React from 'react';
 import { useEffect, useState } from 'react';
-import { Text, View } from 'react-native';
+import { Button, Text, View } from 'react-native';
 import DataList from '../../Components/DataList';
 import ListItem from '../../Components/ListItem';
 import { BASEURL } from '../../Config';
@@ -9,9 +9,11 @@ import { setConnections, updateConnection } from '../../connectionSlice';
 import SocketUtil from '../../util/socketutil';
 import Card from '../../Components/Card';
 import ConnectionRequest from './ConnectionRequest';
+import { H2 } from '../../Components/fonts';
 
-const Connections = ({socket}) => {
+const Connections = ({socket, navigation}) => {
     const [socketUtil, setsocketUtil] = useState(null);
+    const [adding, setAdding] = useState(false);
     if (socket && !socketUtil) {
         setsocketUtil(SocketUtil(socket));
     }
@@ -95,6 +97,7 @@ const Connections = ({socket}) => {
     return (
         <View>
             <DataList cards data={sortedConnections} renderItem={props => <ConnectionItem {...props} cards/>} />
+            <Button title="+" onPress={() => navigation.navigate('Add')}></Button>
         </View>
     );
 };

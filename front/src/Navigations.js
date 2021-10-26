@@ -7,6 +7,7 @@ import More from './img/More.svg';
 import MoreSelected from './img/MoreSelected.svg';
 import QrCode from './img/QrCode.svg';
 import QrCodeSelected from './img/QrCodeSelected.svg';
+import ChevronLeft from './img/ChevronLeft.svg';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 import { PRIMARY_BLUE, PRIMARY_YELLOW } from './Config';
@@ -18,6 +19,7 @@ import { Platform } from 'react-native';
 import Credentials from './Views/Credentials';
 import { useSelector } from 'react-redux';
 import ConnectionRequest from './Views/Connections/ConnectionRequest';
+import Add from './Views/Connections/Add';
 
 const Nav = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -28,9 +30,19 @@ const platformOptions = {
 
 const ConnectionStack = (socket) => {
     return (
-        <Stack.Navigator>
+        <Stack.Navigator 
+            screenOptions={{
+                presentation: 'modal',
+                headerBackImage: (props) => {
+                    return <Icon><ChevronLeft></ChevronLeft></Icon>
+                }
+            }}
+        >
             <Stack.Screen name="Connections">
                 {(props) => <Connections {...props} socket={socket} />}
+            </Stack.Screen>
+            <Stack.Screen name="Add">
+                {(props) => <Add {...props} socket={socket} />}
             </Stack.Screen>
             {/*<Stack.Screen name="Yhteyspyyntö">
                 {(props) => <ConnectionRequest {...props} socket={socket} />}

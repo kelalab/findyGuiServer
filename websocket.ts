@@ -17,13 +17,13 @@ const socket = (io: Server) => {
         });
         socket.on('message', async(data) => {
             console.log('message', data);
-            if(data.type==='seen'){
+            /*if(data.type==='seen'){
                 await markAsSeen(data, socket);
-            }
+            }*/
         })
     });
 }
-
+/*
 const markAsSeen = async(data, socket) => {
     const existing_mock_data:any = await getConnections();
     console.log('existing data', existing_mock_data);
@@ -36,6 +36,6 @@ const markAsSeen = async(data, socket) => {
     console.log('obj to update', objToUpdate);
     updateConnection(objToUpdate);
     socket.send({type: 'update', data: {obj: 'Connection', data: {id: objToUpdate.id, newItem:objToUpdate.newItem}}})
-}
+}*/
 
 export default socket;

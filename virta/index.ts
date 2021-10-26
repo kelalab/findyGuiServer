@@ -1,12 +1,21 @@
 import express from 'express';
+import session from 'express-session';
 import { createServer } from 'http';
 const app = express();
+app.use(session({
+    secret: 'keyboard cat',
+    resave: false,
+    saveUninitialized: true,
+    cookie: { secure: false }
+})
+);
 const server = createServer(app);
-import apiRouter from './api.js';
+import apiRouter from '../api.js';
 import { Server } from 'socket.io';
-import socket from './websocket.js';
+import socket from '../websocket.js';
 import fetch from 'node-fetch';
 import fs from 'fs';
+import { getDid, createConnectionInvitation } from '../api.js';
 
 const io = new Server(server);
 const args = process.argv.slice(2);
@@ -92,32 +101,6 @@ const getWallet = async (id?: String) : Promise<WalletResponse> => {
     const json:any = await response.json();
     console.log('getWallet', json);
     return json;
-}
-
-const getDid = async (token: String) => {
-    const create = false;
-    const existing_res = await fetch(`${agency_url}/wallet/did`,{
-        headers: {
-            'Authorization': `Bearer ${token}`,
-        }
-    });
-    const existing:any = await existing_res.json();
-    if(existing){
-        console.log('existing dids: ', existing);
-        const resultarray = existing.results;
-        return resultarray[0];
-    }
-    //return null;
-    if(create){
-        const response = await fetch(`${agency_url}/wallet/did/create`, {
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${token}`
-            }
-        });
-        const json = await response.json();
-        return json;
-    }
 }
 
 interface RegisterBody{
@@ -207,19 +190,7 @@ const getToken = async (id) => {
     }
 }
 
-const createConnectionInvitation = async (token, autoAccept = true) => {
-    const body = {};
-    const response = await fetch(`${agency_url}/connections/create-invitation?autoAccept=${autoAccept}`, {
-        method: 'POST',
-        body: JSON.stringify(body),
-        headers: {
-            'Authorization': `Bearer ${token}`
-        }
-    });
-    const json = await response.json();
-    //console.log('invitation', json);
-    return json;
-}
+
 
 const getConnections = async(token, mydid=null) => {
     try {
@@ -254,62 +225,72 @@ interface WalletResponse {
     token: string
 }
     
-const main = async() => {
-    const name = 'Powah';
-    const response = await getStatus();
-    console.log('status', response.status);
-    const wallet_name = `Testi_${name}_Lompakko`;
-    if(response.status === 200){
-        console.log('connection ok');
-    }
-    const existing_wallet = (await getWallets(wallet_name)).results[0];
-    const all_wallet_info = await getWallet(existing_wallet.wallet_id);
-    let token;
-    let walletid = existing_wallet.wallet_id;
-    if(existing_wallet){
-        const wallet_id = existing_wallet.wallet_id;
-        console.log('existing wallet', wallet_id);
-        const webhook_urls = all_wallet_info.settings['wallet.webhook_urls'];
-        console.log('wallet_webhook', webhook_urls);
-        if(webhook_urls.length === 0){
-            updateWallet(existing_wallet.wallet_id);
+const main = async(req) => {
+    if(!req.session.token){
+        const name = 'Powah';
+        const response = await getStatus();
+        console.log('status', response.status);
+        const wallet_name = `Testi_${name}_Lompakko`;
+        if(response.status === 200){
+            console.log('connection ok');
+        }
+        const existing_wallet = (await getWallets(wallet_name)).results[0];
+        let token;
+        let walletid;
+        if(existing_wallet){
+            const all_wallet_info = await getWallet(existing_wallet.wallet_id);
+            walletid = existing_wallet.wallet_id;
+            const wallet_id = existing_wallet.wallet_id;
+            console.log('existing wallet', wallet_id);
             const webhook_urls = all_wallet_info.settings['wallet.webhook_urls'];
             console.log('wallet_webhook', webhook_urls);
+            /*if(webhook_urls.length === 0){
+                updateWallet(existing_wallet.wallet_id);
+                const webhook_urls = all_wallet_info.settings['wallet.webhook_urls'];
+                console.log('wallet_webhook', webhook_urls);
+            }*/
+            token = await getToken(wallet_id);
+        }else{
+            const new_wallet = await createWallet(wallet_name);
+            if(new_wallet){
+                token = new_wallet.token;
+                walletid = new_wallet.wallet_id;
+            }
         }
-        token = await getToken(wallet_id);
-    }else{
-        const new_wallet = await createWallet(wallet_name);
-        if(new_wallet){
-            token = new_wallet.token;
-            walletid = new_wallet.wallet_id;
+        console.log('token', token);
+        if(token){
+            req.session.token = token;
+            req.session.save();
         }
+        const did:any = await getDid(token);
+        console.log('did', did);
+        const publicDid:any  = await getPublic(token, did.did);
+        if(publicDid.result){
+            console.log('public did', publicDid);
+        //const invitation = await createConnectionInvitation(token);
+        //console.log('invitation', JSON.stringify(invitation));
+        }else{
+            const register_result = await register(did.did, did.verkey, name);
+            console.log('registered a did', register_result);
+            await assignPublic(token,did.did);
+        }
+        getConnections(token);
     }
-    console.log('token', token);
-    const did:any = await getDid(token);
-    console.log('did', did);
-    const publicDid = await getPublic(token, did.did);
-    if(publicDid){
-        console.log('public did', publicDid);
-        const invitation = await createConnectionInvitation(token);
-        console.log('invitation', JSON.stringify(invitation));
-    }else{
-        const register_result = await register(did.did, did.verkey, name);
-        await assignPublic(token,did.did);
-    }
-    getConnections(token);
 }
 
-main();
+//main();
 
 /** init websocket stuff */
 socket(io);
 
-app.use('/api', apiRouter);
-app.use('/webhook', async(req,res,next) => {
-    console.log('received something', req);
+app.use('/',async(req,res,next)=>{
+    main(req);
     next();
 });
-app.use(express.static('front/build'));
+
+app.use('/api', apiRouter);
+
+app.use(express.static('public'));
 
 server.listen(port, () => {
     console.log(`server listening on port ${port}.`);
