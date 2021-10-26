@@ -52,3 +52,4 @@ jobs:
     - run: |
         docker build "$GITHUB_WORKSPACE" -f  ${{ env.DOCKERFILE }} -t ${{ env.REGISTRYNAME }}.azurecr.io/${{ env.IMAGENAME }}:${{ github.sha }}
         docker push ${{ env.REGISTRYNAME }}.azurecr.io/${{ env.IMAGENAME }}:${{ github.sha }}
+        docker tag ${{ env.REGISTRYNAME }}.azurecr.io/${{ env.IMAGENAME }}:${{ github.sha }} ${{ env.REGISTRYNAME }}.azurecr.io/${{ env.IMAGENAME }}:latest
