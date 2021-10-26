@@ -17,9 +17,10 @@ app.use(express.urlencoded({extended:false}));
 
 app.use('/webhook', async(req,res,next) => {
     console.log('received something', req);
-    const walletId = req.headers['x-wallet-id'];
-    const data = JSON.parse(req.body);
-    console.log('wallet: ', walletId, 'data:', data);
+    const walletId = req.get('x-wallet-id');
+    console.log('body', req.body);
+    //const data = JSON.parse(req.body);
+    console.log('wallet: ', walletId);
     next();
 });
 app.use(express.static('front/build'));
