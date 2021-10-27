@@ -234,7 +234,7 @@ const main = async(req) => {
     if(!req.session.token){
         const name = 'Powah';
         const response = await getStatus();
-        console.log('status', response.status);
+        //console.log('status', response.status);
         const wallet_name = `Testi_${name}_Lompakko`;
         if(response.status === 200){
             console.log('connection ok');
@@ -246,7 +246,7 @@ const main = async(req) => {
             const all_wallet_info = await getWallet(existing_wallet.wallet_id);
             walletid = existing_wallet.wallet_id;
             const wallet_id = existing_wallet.wallet_id;
-            console.log('existing wallet', wallet_id);
+            //console.log('existing wallet', wallet_id);
             const webhook_urls:string[] = all_wallet_info.settings['wallet.webhook_urls'];
             console.log('wallet_webhook', webhook_urls);
             if(webhook_urls.length === 0 || webhook_urls.indexOf(`${register_url}:4000/webhook`) === -1){
@@ -262,21 +262,21 @@ const main = async(req) => {
                 walletid = new_wallet.wallet_id;
             }
         }
-        console.log('token', token);
+        //console.log('token', token);
         if(token){
             req.session.token = token;
             req.session.save();
         }
         const did:any = await getDid(token);
-        console.log('did', did);
+        //console.log('did', did);
         const publicDid:any  = await getPublic(token, did.did);
         if(publicDid.result){
-            console.log('public did', publicDid);
+            //console.log('public did', publicDid);
         //const invitation = await createConnectionInvitation(token);
         //console.log('invitation', JSON.stringify(invitation));
         }else{
             const register_result = await register(did.did, did.verkey, name);
-            console.log('registered a did', register_result);
+            //console.log('registered a did', register_result);
             await assignPublic(token,did.did);
         }
         getConnections(token);
@@ -323,6 +323,7 @@ app.use('/webhook', async(req,res,next) => {
     //const data = JSON.parse(req.body);
     console.log('wallet: ', walletId);
     events.send('new', req.body);
+    res.status(200).send();
     next();
 });
 
