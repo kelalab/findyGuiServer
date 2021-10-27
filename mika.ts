@@ -48,6 +48,29 @@ const createWallet = async (wallet_name?:String) : Promise<WalletResponse> => {
     }
 }
 
+const updateWallet =  async (wallet_id:String): Promise<WalletResponse> => {
+    try {
+        const response = await fetch(`${agency_url}/multitenancy/wallet/${wallet_id}`, {
+            method: 'PUT',
+            body: JSON.stringify({
+                wallet_webhook_urls: [
+                    //`http://localhost:${unusedport}/webhook`,
+                    `${agency_url.replace(':8080','')}:${port}/webhook`,
+                ]
+            }),
+        });
+        if(response.status === 200){
+            const json:any = await response.json();
+            console.log('update response', json);
+            return json;
+        }
+        return null;
+    } catch (error) {
+        console.error(error);
+        return null;
+    }
+}
+
 interface WalletsResponse{
     results: [
         {
@@ -160,6 +183,13 @@ const main = async(req) => {
             walletid = existing_wallet.wallet_id;
             const wallet_id = existing_wallet.wallet_id;
             console.log('existing wallet', wallet_id);
+            const webhook_urls:string[] = all_wallet_info.settings['wallet.webhook_urls'];
+            console.log('wallet_webhook', webhook_urls);
+            if(webhook_urls.length === 0 || webhook_urls.indexOf(`${register_url}:4000/webhook`) === -1){
+                updateWallet(existing_wallet.wallet_id);
+                const webhook_urls = all_wallet_info.settings['wallet.webhook_urls'];
+                console.log('wallet_webhook', webhook_urls);
+            }
             token = await getToken(wallet_id);
         }else{
             const new_wallet = await createWallet(wallet_name);
@@ -190,6 +220,48 @@ app.use(express.urlencoded({extended: false}))
 app.use((req,res,next)=>{
     main(req);
     next();
+});
+
+const Events = () => {
+    const listeners =  new Map<String, Function>();
+    const on = (evt, callback) => {
+        listeners.set(evt, callback);
+    };
+    const send = (evt, data) => {
+        const callback = listeners.get(evt);
+        callback(data);
+    }
+    return {
+        on:on,
+        send:send
+    }
+};
+
+const events = Events();
+
+app.use('/webhook', async(req,res,next) => {
+    console.log('received something', req);
+    const walletId = req.get('x-wallet-id');
+    console.log('body', req.body);
+    //const data = JSON.parse(req.body);
+    console.log('wallet: ', walletId);
+    events.send('new', req.body);
+    res.status(200).send();
+    next();
+});
+
+app.use('/events', async(req,res,next) =>{
+    res.set({
+        'Cache-Control': 'no-cache',
+        'Content-Type': 'text/event-stream',
+        'Connection': 'keep-alive'
+    });
+    res.flushHeaders();
+    res.write('retry: 10000\n\n');
+    events.on('new', (data) => {
+        console.log('SENDING EVENT TO CLIENT', data);
+        res.write(`data: ${JSON.stringify(data)} \n\n`)
+    });
 });
 
 app.post('/accept-invitation', async(req,res,next) => {
