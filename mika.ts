@@ -13,7 +13,6 @@ import { Server } from 'socket.io';
 import socket from './websocket.js';
 import fetch from 'node-fetch';
 import apiRouter, { getDid } from './api.js';
-import fs from 'fs';
 
 const io = new Server(server);
 const args = process.argv.slice(2);
@@ -248,4 +247,9 @@ server.on('error', (e:ADDRINUSEERROR) => {
             });
         }, 1000);
     }
+});
+
+process.on('SIGINT', () => {
+    console.log("exiting");
+    process.exit(0);
 });

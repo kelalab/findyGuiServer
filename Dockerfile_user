@@ -1,0 +1,21 @@
+FROM node:16-slim
+ARG FOLDER=mika
+EXPOSE 4000
+WORKDIR /src
+COPY ${FOLDER} ${FOLDER}
+COPY mika.ts index.ts
+COPY api.ts api.ts
+COPY constants.ts constants.ts
+COPY websocket.ts websocket.ts
+COPY package.json package.json
+COPY tsconfig.json tsconfig.json
+RUN npm i
+WORKDIR /src/${FOLDER}
+
+RUN ls -lha \
+&& npm run build_user \
+&& cd .. \
+&& ls -lha
+WORKDIR /src
+RUN ls -lha bin
+CMD [ "node",  "bin/index.js" ]
