@@ -64,7 +64,7 @@ const updateWallet =  async (wallet_id:String): Promise<WalletResponse> => {
             body: JSON.stringify({
                 wallet_webhook_urls: [
                     //`http://localhost:${unusedport}/webhook`,
-                    `http://172.18.0.1:4000/webhook`,
+                    `${register_url}:4000/webhook`,
                 ]
             }),
         });
