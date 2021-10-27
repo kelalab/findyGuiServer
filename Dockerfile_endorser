@@ -12,7 +12,7 @@ RUN npm i
 WORKDIR /src/${FOLDER}
 
 RUN ls -lha \
-&& npm run build \
+&& npm run build_endorser \
 && cd .. \
 && ls -lha
 WORKDIR /src

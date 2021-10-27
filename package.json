@@ -8,6 +8,7 @@
         "dockerbuildendorser": "docker build -f Dockerfile_endorser -t virta --progress=plain .",
         "mika": "nodemon mika.ts",
         "build": "tsc",
+        "build_endorser": "npm run build && cp -r ./virta/public ./bin",
         "start": "npm run build && node bin/index.js",
         "start_endorser": "node bin/virta/index.js",
         "lint": "eslint . --ext .ts"
@@ -26,8 +27,7 @@
         "express": "^4.17.1",
         "express-session": "^1.17.2",
         "node-fetch": "^3.0.0",
-        "socket.io": "^4.1.3",
-        "ws": "^7.4.6"
+        "socket.io": "^4.1.3"
     },
     "type": "module"
 }
