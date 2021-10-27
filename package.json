@@ -8,7 +8,7 @@
         "dockerbuildendorser": "docker build -f Dockerfile_endorser -t virta --progress=plain .",
         "mika": "nodemon mika.ts",
         "build": "tsc",
-        "build_endorser": "npm run build && cp -r ./virta/public ./bin",
+        "build_endorser": "npm run build && cp -r ./virta/public ./bin/virta",
         "start": "npm run build && node bin/index.js",
         "start_endorser": "node bin/virta/index.js",
         "lint": "eslint . --ext .ts"
