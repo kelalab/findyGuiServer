@@ -1,4 +1,5 @@
 FROM node:16-slim
+EXPOSE 4000
 WORKDIR /src
 COPY webhook.ts index.ts
 COPY package.json package.json

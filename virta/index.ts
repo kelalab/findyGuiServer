@@ -1,5 +1,6 @@
 import express from 'express';
 import session from 'express-session';
+import process from 'process';
 import { createServer } from 'http';
 const app = express();
 app.use(session({
@@ -335,3 +336,8 @@ server.on('error', (e:ADDRINUSEERROR) => {
         }, 1000);
     }
 });
+
+process.on('SIGINT', () => {
+    console.log("exiting");
+    process.exit(0);
+})
