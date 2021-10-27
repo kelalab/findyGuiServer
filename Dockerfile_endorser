@@ -1,6 +1,10 @@
 FROM node:16-slim
+ARG FOLDER=virta
 WORKDIR /src
-COPY virta  .
+COPY ${FOLDER}  .
+COPY api.ts api.ts
+COPY websocket.ts websocket.ts
+WORKDIR ${FOLDER}
 COPY package.json package.json
 COPY tsconfig.json tsconfig.json
 RUN npm i && \
