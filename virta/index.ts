@@ -1,6 +1,8 @@
 import express from 'express';
 import session from 'express-session';
 import process from 'process';
+import {fileURLToPath} from 'url';
+import {dirname} from 'path';
 import { createServer } from 'http';
 const app = express();
 app.use(session({
@@ -286,7 +288,7 @@ const main = async(req) => {
 /** init websocket stuff */
 socket(io);
 
-app.use('/',async(req,res,next)=>{
+app.use((req,res,next)=>{
     main(req);
     next();
 });
@@ -313,6 +315,10 @@ app.use('/events', async(req,res,next) =>{
     
 });
 
+app.get('/', (req, res) => {
+    res.sendFile(dirname(fileURLToPath(import.meta.url))+'/public/index.html');
+})
+console.log('path', dirname(fileURLToPath(import.meta.url)));
 app.use(express.static('public'));
 
 server.listen(port, () => {

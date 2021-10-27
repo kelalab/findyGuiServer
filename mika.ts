@@ -188,7 +188,7 @@ app.use(express.text());
 app.use(express.urlencoded({extended: false}))
 //app.use('/api', apiRouter);
 
-app.use('/',async(req,res,next)=>{
+app.use((req,res,next)=>{
     main(req);
     next();
 });
