@@ -313,7 +313,7 @@ const Events = () => {
 const events = Events();
 
 app.use('/webhook', async(req,res,next) => {
-    //console.log('received something', req);
+    console.log('received something', req);
     const walletId = req.get('x-wallet-id');
     console.log('body', req.body);
     //const data = JSON.parse(req.body);
@@ -331,6 +331,7 @@ app.use('/events', async(req,res,next) =>{
     res.flushHeaders();
     res.write('retry: 10000\n\n');
     events.on('new', (data) => {
+        console.log('SENDING EVENT TO CLIENT', data);
         res.write(`data: ${JSON.stringify(data)} \n\n`)
     });
 });
