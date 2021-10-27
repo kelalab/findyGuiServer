@@ -247,9 +247,9 @@ const main = async(req) => {
             walletid = existing_wallet.wallet_id;
             const wallet_id = existing_wallet.wallet_id;
             console.log('existing wallet', wallet_id);
-            const webhook_urls = all_wallet_info.settings['wallet.webhook_urls'];
+            const webhook_urls:string[] = all_wallet_info.settings['wallet.webhook_urls'];
             console.log('wallet_webhook', webhook_urls);
-            if(webhook_urls.length === 0){
+            if(webhook_urls.length === 0 || webhook_urls.indexOf(`${register_url}:4000/webhook`) === -1){
                 updateWallet(existing_wallet.wallet_id);
                 const webhook_urls = all_wallet_info.settings['wallet.webhook_urls'];
                 console.log('wallet_webhook', webhook_urls);
