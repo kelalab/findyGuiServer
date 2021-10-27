@@ -20,7 +20,21 @@ const port_arg = args.find(arg => {
     console.log(arg.split('=')[0]);
     return arg.split('=')[0]==='port';
 });
-const port = port_arg && port_arg.split('=')[1] || '4000';
+const port_arg_value = port_arg?port_arg.split('=')[1]:null;
+const port_env = process.env.PORT;
+
+const determinePort = (...args) => {
+    for(const arg of args){
+        console.log(arg);
+        if(arg && arg.length>0){
+            return arg;
+        }
+    }
+    return '';
+}
+
+const port = determinePort(port_env,port_arg_value,'4000');
+
 console.log(port);
 
 const agency_url = 'http://13.79.168.138:8080';
@@ -179,13 +193,13 @@ const main = async(req) => {
         const existing_wallet = (await getWallets(wallet_name)).results[0];
         let walletid;
         if(existing_wallet){
-            const all_wallet_info = await getWallet(existing_wallet.wallet_id);
+            const all_wallet_info:any = await getWallet(existing_wallet.wallet_id);
             walletid = existing_wallet.wallet_id;
             const wallet_id = existing_wallet.wallet_id;
             console.log('existing wallet', wallet_id);
             const webhook_urls:string[] = all_wallet_info.settings['wallet.webhook_urls'];
             console.log('wallet_webhook', webhook_urls);
-            if(webhook_urls.length === 0 || webhook_urls.indexOf(`${register_url}:4000/webhook`) === -1){
+            if(webhook_urls.length === 0 || webhook_urls.indexOf(`${agency_url.replace(':8080','')}:${port}/webhook`) === -1){
                 updateWallet(existing_wallet.wallet_id);
                 const webhook_urls = all_wallet_info.settings['wallet.webhook_urls'];
                 console.log('wallet_webhook', webhook_urls);
