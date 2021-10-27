@@ -295,12 +295,30 @@ app.use((req,res,next)=>{
 
 app.use('/api', apiRouter);
 
+const Events = () => {
+    const listeners =  new Map<String, Function>();
+    const on = (evt, callback) => {
+        listeners.set(evt, callback);
+    };
+    const send = (evt, data) => {
+        const callback = listeners.get(evt);
+        callback(data);
+    }
+    return {
+        on:on,
+        send:send
+    }
+};
+
+const events = Events();
+
 app.use('/webhook', async(req,res,next) => {
     //console.log('received something', req);
     const walletId = req.get('x-wallet-id');
     console.log('body', req.body);
     //const data = JSON.parse(req.body);
     console.log('wallet: ', walletId);
+    events.send('new', req.body);
     next();
 });
 
@@ -312,7 +330,9 @@ app.use('/events', async(req,res,next) =>{
     });
     res.flushHeaders();
     res.write('retry: 10000\n\n');
-    
+    events.on('new', (data) => {
+        res.write(`data: ${JSON.stringify(data)} \n\n`)
+    });
 });
 
 app.get('/', (req, res) => {
