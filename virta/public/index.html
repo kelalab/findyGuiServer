@@ -13,7 +13,7 @@
         </form>
         <div>
             <h3>Messages</h3>
-            <div id="messages"></div>
+            <div id="messages" style="display:flex; flex-direction: column;"></div>
         </div>
         <div id="statusoutput"></div>
         <script type="text/javascript">
@@ -39,6 +39,7 @@
             source.addEventListener('message', message => {
                 console.log('Got', message);
                 const msg = document.createElement('span');
+                msg.style="background-color: orange; padding: 16px; font-weight: bold; border-radius: 8px; margin-top: 8px; margin-right: 48px;";
                 msg.innerHTML = message.data;
                 document.getElementById('messages').appendChild(msg);
             })
