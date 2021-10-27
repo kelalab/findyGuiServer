@@ -1,13 +1,17 @@
 FROM node:16-slim
 ARG FOLDER=virta
 WORKDIR /src
-COPY ${FOLDER}  .
+COPY ${FOLDER} ${FOLDER}
 COPY api.ts api.ts
+COPY constants.js constants.js
 COPY websocket.ts websocket.ts
-WORKDIR ${FOLDER}
 COPY package.json package.json
 COPY tsconfig.json tsconfig.json
-RUN npm i && \
-npm run build && \
-ls -lha
+RUN npm i
+WORKDIR /src/${FOLDER}
+
+RUN ls -lha \
+&& npm run build \
+&& cd .. \
+&& rm -rf node_modules
 CMD [ "node",  "bin/index.js" ]

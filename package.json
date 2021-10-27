@@ -5,6 +5,7 @@
         "dev_all": "concurrently \"npm run dev_front\" \"npm run dev port=3000\" ",
         "dev": "nodemon index.ts ",
         "virta": "cd virta && nodemon index.ts",
+        "dockerbuildendorser": "docker build -f Dockerfile_endorser -t virta .",
         "mika": "nodemon mika.ts",
         "build": "tsc",
         "start": "npm run build && node bin/index.js",
