@@ -1,4 +1,7 @@
 <html>
+    <head>
+        <title>Powah</title>
+    </head>
     <body>
         <h1>Powah!!!</h1>
         <form>
@@ -8,6 +11,10 @@
         <form>
             <input type="button" id="checkinvitation" value="check invitation status"/>
         </form>
+        <div>
+            <h3>Messages</h3>
+            <div id="messages"></div>
+        </div>
         <div id="statusoutput"></div>
         <script type="text/javascript">
             let btn = document.getElementById('createinvitation');
@@ -26,6 +33,15 @@
                 let output = document.getElementById('statusoutput');
                 output.innerText = json_as_text;
             }
+        </script>
+        <script type="text/javascript">
+            const source = new EventSource('/events');
+            source.addEventListener('message', message => {
+                console.log('Got', message);
+                const msg = document.createElement('span');
+                msg.innerHTML = message.data;
+                document.getElementById('messages').appendChild(msg);
+            })
         </script>
     </body>
 </html>

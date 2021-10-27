@@ -5,19 +5,64 @@
         <textarea name="invitation" id="invitation"></textarea>
         <input type="submit" value="Hyväksy kutsu"/>
     </form>
+    <div id="connection_div">
+        <input type="button" id="getconnections_button" value="Get connections" />
+        <form>
+        <label for="selected_connection">Choose an active connection:</label>
+        <select id="selected_connection" name="selected_connection" aria-placeholder="Pick one" onchange="select(event)">
+            <option value="Pick one" disabled="true">Pick one</option>
+        </select>
+        </form>
+    </div>
     <form>
-        <input/>
+        <input id="msg"/>
         <input type="button" id="sendmsg" value="Lähetä viesti" />
     </form>
     <script type="text/javascript">
             let btn = document.getElementById('sendmsg');
+            let msg = document.getElementById('msg');
+ 
             btn.onclick = async function(evt){
                 console.log('clicked');
-                let resp = await fetch('/api/send_message');
+                let connid = document.getElementById('selected_connection');
+                let resp = await fetch('/api/send_message',{
+                    method: 'POST',
+                    body: JSON.stringify({recipient: connid.value, message:msg.value})
+                });
                 let json_as_text = await resp.text();
                 let inv_area = document.getElementById('invitation');
                 inv_area.value = json_as_text;
             }
+            function select(evt){
+                console.log(evt);
+                console.log(evt.target.value);
+            }
+    </script>
+    <script type="text/javascript">
+        async function getConnections() {
+            let resp = await fetch('/api/connections',{
+                method: 'GET',
+            });
+            let json = await resp.json();
+            let select = document.getElementById('selected_connection');
+            if(json && json.length>0){
+                // add the newly created element and its content into the DOM
+                const currentDiv = document.getElementById("msg");
+                for(const elem of json){
+                console.log(elem);
+                 // and give it some content
+                const newOption = document.createElement("option");
+
+                // add the text node to the newly created div
+                newOption.value=elem.connection_id;
+                newOption.innerHTML=elem.their_label;
+                select.appendChild(newOption);
+            }
+            }
+            
+        }
+        let cbtn = document.getElementById('getconnections_button');
+        cbtn.onclick = getConnections;
     </script>
     <iframe name="hiddenFrame" width="0" height="0" border="0" style="display: none;"></iframe>
 </body>

@@ -32,7 +32,7 @@ apiRouter.get('/create_invitation', async (req, res, next) => {
     if(!req.session.invitation){
         const token = req.session.token;
         console.log('token', token);
-        invitation = await createConnectionInvitation(token);
+        invitation = await createConnectionInvitation(token, true);
         console.log('invitation', invitation);
         req.session.invitation = invitation;
         req.session.save();
@@ -56,9 +56,43 @@ apiRouter.get('/check_invitation', async (req, res, next) => {
     }
 });
 
+apiRouter.post('/send_message', async (req,res,next) => {
+    console.log('sending message');
+    const msg = req.body;
+    const msg_json = JSON.parse(req.body);
+    const recipient = msg_json.recipient;
+    const message = msg_json.message;
+    const token = req.session.token;
+    console.log('msg', msg, recipient, message);
+    const response = await fetch(`${AGENCY_URL}/connections/${recipient}/send-message`, {
+        method: 'POST',
+        headers: {
+            'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({content: message})
+    });
+    console.log(response);
+    if(response.status===200){
+        const json = await response.json();
+        console.log(json);
+        res.status(200).send();
+    }
+    res.status(500).send();
+});
+
+apiRouter.get('/connections', async (req,res,next)=>{
+    console.log('----> fetching connections');
+    const token = req.session.token;
+    console.log('token', token);
+    const connections = await getConnections(token);
+    const response = connections.results.filter(c => c.state === 'response');
+    console.log('<--- connections', response)
+    res.json(response);
+});
+
 export const getConnections = async(token, conn_id=null) => {
     if(conn_id){
-        const data = await fetch(`${AGENCY_URL}/connections/${conn_id}`, {
+        const data = await fetch(`${AGENCY_URL}/connections/${conn_id?conn_id:''}`, {
             headers: {
                 'Authorization': `Bearer ${token}`
             }
@@ -66,15 +100,25 @@ export const getConnections = async(token, conn_id=null) => {
         const json = await data.json();
         return json;
     }else{
-
+        if(mock && !connections){
+            const data: any = await readFile('mock/connections.json');
+            const obj = JSON.parse(data);
+            connections = obj;
+            return obj;
+        }
+        const data = await fetch(`${AGENCY_URL}/connections`, {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+        if(data.status === 200){
+            const json = await data.json();
+            return json;
+        }
+        else{
+            console.log(data.status);
+        } 
     }
-    if(mock && !connections){
-        const data: any = await readFile('mock/connections.json');
-        const obj = JSON.parse(data);
-        connections = obj;
-        return obj;
-    }
-    return connections;
 }
 
 export const updateConnection = async(connection) => {
@@ -116,7 +160,9 @@ export const getDid = async (token: String) => {
         }
     });
     const existing:any = await existing_res.json();
-    if(existing && existing.length > 0){
+    console.log('existing dids: ', existing);
+ 
+    if(existing && existing.results && existing.results.length > 0){
         console.log('existing dids: ', existing);
         const resultarray = existing.results;
         return resultarray[0];
@@ -133,7 +179,7 @@ export const getDid = async (token: String) => {
     }
 }
 
-export const createConnectionInvitation = async (token, autoAccept = true) => {
+export const createConnectionInvitation = async (token, autoAccept = false) => {
     const body = {};
     const response = await fetch(`${AGENCY_URL}/connections/create-invitation?auto_accept=${autoAccept}`, {
         method: 'POST',

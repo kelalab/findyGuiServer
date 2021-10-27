@@ -13,6 +13,7 @@ const server = createServer(app);
 import apiRouter from '../api.js';
 import { Server } from 'socket.io';
 import socket from '../websocket.js';
+import WebSocket from 'ws';
 import fetch from 'node-fetch';
 import fs from 'fs';
 import { getDid, createConnectionInvitation } from '../api.js';
@@ -59,7 +60,8 @@ const updateWallet =  async (wallet_id:String): Promise<WalletResponse> => {
             method: 'PUT',
             body: JSON.stringify({
                 wallet_webhook_urls: [
-                    `http://localhost:${unusedport}/webhook`
+                    //`http://localhost:${unusedport}/webhook`,
+                    `http://172.18.0.1:4000/webhook`,
                 ]
             }),
         });
@@ -244,11 +246,11 @@ const main = async(req) => {
             console.log('existing wallet', wallet_id);
             const webhook_urls = all_wallet_info.settings['wallet.webhook_urls'];
             console.log('wallet_webhook', webhook_urls);
-            /*if(webhook_urls.length === 0){
+            if(webhook_urls.length === 0){
                 updateWallet(existing_wallet.wallet_id);
                 const webhook_urls = all_wallet_info.settings['wallet.webhook_urls'];
                 console.log('wallet_webhook', webhook_urls);
-            }*/
+            }
             token = await getToken(wallet_id);
         }else{
             const new_wallet = await createWallet(wallet_name);
@@ -289,6 +291,26 @@ app.use('/',async(req,res,next)=>{
 });
 
 app.use('/api', apiRouter);
+
+app.use('/webhook', async(req,res,next) => {
+    //console.log('received something', req);
+    const walletId = req.get('x-wallet-id');
+    console.log('body', req.body);
+    //const data = JSON.parse(req.body);
+    console.log('wallet: ', walletId);
+    next();
+});
+
+app.use('/events', async(req,res,next) =>{
+    res.set({
+        'Cache-Control': 'no-cache',
+        'Content-Type': 'text/event-stream',
+        'Connection': 'keep-alive'
+    });
+    res.flushHeaders();
+    res.write('retry: 10000\n\n');
+    
+});
 
 app.use(express.static('public'));
 

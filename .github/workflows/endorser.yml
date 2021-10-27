@@ -23,12 +23,12 @@ on:
 env:
   RESOURCEGROUPNAME: "Findy"
   LOCATION: "North Europe"
-  IMAGENAME: "webhook"
+  IMAGENAME: "Endorser"
   REGISTRYSKU: "Standard"
   SUBSCRIPTIONID: "81fe6fbd-ec53-4c4d-aac1-0eb01d6bf6c4"
   REGISTRYLOCATION: "North Europe"
   REGISTRYNAME: "kelalab"
-  DOCKERFILE: "Dockerfile_webhook"
+  DOCKERFILE: "Dockerfile_endorser"
 
 jobs:
   build-and-deploy:

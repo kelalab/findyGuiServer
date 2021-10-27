@@ -5,14 +5,14 @@ app.use(session({
     secret: 'keyboard cat',
     resave: false,
     saveUninitialized: true,
-    cookie: { secure: true }
-  }));
+    cookie: { secure: false }
+}));
 import { createServer } from 'http';
 const server = createServer(app);
 import { Server } from 'socket.io';
 import socket from './websocket.js';
 import fetch from 'node-fetch';
-import { getDid } from './api.js';
+import apiRouter, { getDid } from './api.js';
 import fs from 'fs';
 
 const io = new Server(server);
@@ -145,38 +145,40 @@ interface WalletResponse {
     
 let token;
 
-const main = async() => {
-    const name = 'Mika';
-    const response = await getStatus();
-    console.log('status', response.status);
-    const wallet_name = `Testi_${name}_Lompakko`;
-    if(response.status === 200){
-        console.log('connection ok');
-    }
-    const existing_wallet = (await getWallets(wallet_name)).results[0];
-    let walletid;
-    if(existing_wallet){
-        const all_wallet_info = await getWallet(existing_wallet.wallet_id);
-        walletid = existing_wallet.wallet_id;
-        const wallet_id = existing_wallet.wallet_id;
-        console.log('existing wallet', wallet_id);
-        token = await getToken(wallet_id);
-    }else{
-        const new_wallet = await createWallet(wallet_name);
-        if(new_wallet){
-            token = new_wallet.token;
-            walletid = new_wallet.wallet_id;
+const main = async(req) => {
+    if(!req.session.token){
+        const name = 'Mika';
+        const response = await getStatus();
+        console.log('status', response.status);
+        const wallet_name = `Testi_${name}_Lompakko`;
+        if(response.status === 200){
+            console.log('connection ok');
+        }
+        const existing_wallet = (await getWallets(wallet_name)).results[0];
+        let walletid;
+        if(existing_wallet){
+            const all_wallet_info = await getWallet(existing_wallet.wallet_id);
+            walletid = existing_wallet.wallet_id;
+            const wallet_id = existing_wallet.wallet_id;
+            console.log('existing wallet', wallet_id);
+            token = await getToken(wallet_id);
+        }else{
+            const new_wallet = await createWallet(wallet_name);
+            if(new_wallet){
+                token = new_wallet.token;
+                walletid = new_wallet.wallet_id;
+            }
+        }
+        console.log('token', token);
+        req.session.token = token;
+        req.session.save();
+        const did:any = await getDid(token);
+        if(did){
+            console.log('did', did.did);
+            const connections = await getConnections(token, did.did);
         }
     }
-    console.log('token', token);
-    const did:any = await getDid(token);
-    if(did){
-        console.log('did', did.did);
-        const connections = await getConnections(token, did.did);
-    }
 }
-
-main();
 
 /** init websocket stuff */
 socket(io);
@@ -185,6 +187,11 @@ app.use(express.json());
 app.use(express.text());
 app.use(express.urlencoded({extended: false}))
 //app.use('/api', apiRouter);
+
+app.use('/',async(req,res,next)=>{
+    main(req);
+    next();
+});
 
 app.post('/accept-invitation', async(req,res,next) => {
     console.log('accept-invitation call', req);
@@ -216,8 +223,9 @@ app.post('/accept-invitation', async(req,res,next) => {
     console.log('accept invitation', json2);
     res.status(200).send();
 })
-
+app.use('/api', apiRouter);
 app.use(express.static('mika'));
+
 
 server.listen(port, () => {
     console.log(`server listening on port ${port}.`);
