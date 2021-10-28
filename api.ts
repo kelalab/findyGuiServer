@@ -85,6 +85,7 @@ apiRouter.get('/connections', async (req,res,next)=>{
     const token = req.session.token;
     console.log('token', token);
     const connections = await getConnections(token);
+    console.log('all connections', connections)
     const response = connections.results.filter(c => c.state === 'response');
     console.log('<--- connections', response)
     res.json(response);
