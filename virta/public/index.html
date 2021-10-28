@@ -84,10 +84,10 @@
                 cbtn.onclick = getConnections;
         </script>
         <script type="text/javascript">
-            let btn = document.getElementById('sendmsg');
+            let msg_btn = document.getElementById('sendmsg');
             let msg = document.getElementById('msg');
  
-            btn.onclick = async function(evt){
+            msg_btn.onclick = async function(evt){
                 console.log('clicked');
                 let connid = document.getElementById('selected_connection');
                 let resp = await fetch('/api/send_message',{
