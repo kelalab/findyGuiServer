@@ -54,6 +54,12 @@
                 const msg = document.createElement('span');
                 msg.style="background-color: orange; padding: 16px; font-weight: bold; border-radius: 8px; margin-top: 8px; margin-right: 48px;";
                 msg.innerHTML = message.data;
+                try{
+                let json = JSON.parse(message.data);
+                msg.innerHTML = json.content;
+                }catch(e){
+
+                }
                 document.getElementById('messages').appendChild(msg);
             })
         </script>
@@ -95,9 +101,6 @@
                     body: JSON.stringify({recipient: connid.value, message:msg.value})
                 });
                 let json_as_text = await resp.text();
-                let inv_area = document.getElementById('invitation');
-                let json_data = JSON.parse(json_as_text);
-                inv_area.value = json_data.content;
             }
             function select(evt){
                 console.log(evt);
