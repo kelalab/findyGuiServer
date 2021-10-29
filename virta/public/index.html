@@ -101,6 +101,10 @@
                     body: JSON.stringify({recipient: connid.value, message:msg.value})
                 });
                 let json_as_text = await resp.text();
+                const sent_msg = document.createElement('span');
+                sent_msg.style="background-color: lightskyblue; padding: 16px; font-weight: bold; border-radius: 8px; margin-top: 8px; margin-left: 48px;";
+                sent_msg.innerHTML = msg.value;
+                document.getElementById('messages').appendChild(sent_msg);
             }
             function select(evt){
                 console.log(evt);
