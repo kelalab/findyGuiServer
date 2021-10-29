@@ -258,6 +258,8 @@ app.use('/webhook', async(req,res,next) => {
     const walletId = req.get('x-wallet-id');
     console.log('body', req.body);
     //const data = JSON.parse(req.body);
+    console.log('origURL', req.originalUrl);
+    console.log('path', req.path);
     console.log('wallet: ', walletId);
     events.send('new', req.body);
     res.status(200).send();
