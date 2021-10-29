@@ -25,3 +25,14 @@ export interface WalletResponse {
     },
     token: String
 }
+
+export interface TokenJSON {
+    token?: String,
+}
+
+export interface RegisterBody{
+    did: string,
+    verkey: string,
+    alias?: string,
+    role: string
+}

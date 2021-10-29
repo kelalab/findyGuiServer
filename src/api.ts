@@ -3,7 +3,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { fileURLToPath } from 'url';
 import fetch from 'node-fetch';
-import { AGENCY_URL } from './constants.js';
+import { AGENCY_URL } from '../constants.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const dir = path.dirname(__filename);

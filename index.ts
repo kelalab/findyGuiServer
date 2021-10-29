@@ -10,13 +10,14 @@ app.use(session({
 })
 );
 const server = createServer(app);
-import apiRouter from './api.js';
+import apiRouter from './src/api.js';
 import { Server } from 'socket.io';
 import socket from './websocket.js';
 import fetch from 'node-fetch';
 import fs from 'fs';
-import { getDid } from './api.js';
+import { getDid } from './src/api.js';
 import { WalletResponse, WalletsResponse } from './types.js';
+import Events from './src/Events';
 
 const io = new Server(server);
 const args = process.argv.slice(2);

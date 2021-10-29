@@ -1,0 +1,115 @@
+<html>
+    <head>
+        <title>Opiskelijatietokanta</title>
+    </head>
+    <body>
+        <h1>Opiskelijatietokanta</h1>
+        <form>
+            <input type="button" id="createinvitation" value="create invitation"/>
+        </form>
+        <textarea id="invitation" style="height:200px; width: 400px;"></textarea>
+        <form>
+            <input type="button" id="checkinvitation" value="check invitation status"/>
+        </form>
+        <div id="connection_div">
+            <input type="button" id="getconnections_button" value="Get connections" />
+            <form>
+            <label for="selected_connection">Choose an active connection:</label>
+            <select id="selected_connection" name="selected_connection" aria-placeholder="Pick one" onchange="select(event)">
+                <option value="Pick one" disabled="true">Pick one</option>
+            </select>
+            </form>
+        </div>
+        <form>
+            <input id="msg"/>
+            <input type="button" id="sendmsg" value="Lähetä viesti" />
+        </form>
+        <div>
+            <h3>Messages</h3>
+            <div id="messages" style="display:flex; flex-direction: column;"></div>
+        </div>
+        <div id="statusoutput"></div>
+        <script type="text/javascript">
+            let btn = document.getElementById('createinvitation');
+            btn.onclick = async function(evt){
+                console.log('clicked');
+                let resp = await fetch('/api/create_invitation');
+                let json_as_text = await resp.text();
+                let inv_area = document.getElementById('invitation');
+                inv_area.value = json_as_text;
+            }
+            let btn_check = document.getElementById('checkinvitation');
+            btn_check.onclick = async function(evt){
+                console.log('clicked');
+                let resp = await fetch('/api/check_invitation');
+                let json_as_text = await resp.text();
+                let output = document.getElementById('statusoutput');
+                output.innerText = json_as_text;
+            }
+        </script>
+        <script type="text/javascript">
+            const source = new EventSource('/events');
+            source.addEventListener('message', message => {
+                console.log('Got', message);
+                const msg = document.createElement('span');
+                msg.style="background-color: orange; padding: 16px; font-weight: bold; border-radius: 8px; margin-top: 8px; margin-right: 48px;";
+                msg.innerHTML = message.data;
+                try{
+                let json = JSON.parse(message.data);
+                msg.innerHTML = json.content;
+                }catch(e){
+
+                }
+                document.getElementById('messages').appendChild(msg);
+            })
+        </script>
+        <script type="text/javascript">
+                async function getConnections() {
+                    let resp = await fetch('/api/connections',{
+                        method: 'GET',
+                    });
+                    let json = await resp.json();
+                    let select = document.getElementById('selected_connection');
+                    if(json && json.length>0){
+                        // add the newly created element and its content into the DOM
+                        const currentDiv = document.getElementById("msg");
+                        for(const elem of json){
+                        console.log(elem);
+                         // and give it some content
+                        const newOption = document.createElement("option");
+        
+                        // add the text node to the newly created div
+                        newOption.value=elem.connection_id;
+                        newOption.innerHTML=elem.their_label;
+                        select.appendChild(newOption);
+                    }
+                    }
+                    
+                }
+                let cbtn = document.getElementById('getconnections_button');
+                cbtn.onclick = getConnections;
+        </script>
+        <script type="text/javascript">
+            let msg_btn = document.getElementById('sendmsg');
+            let msg = document.getElementById('msg');
+ 
+            msg_btn.onclick = async function(evt){
+                console.log('clicked');
+                let connid = document.getElementById('selected_connection');
+                let resp = await fetch('/api/send_message',{
+                    method: 'POST',
+                    body: JSON.stringify({recipient: connid.value, message:msg.value})
+                });
+                let json_as_text = await resp.text();
+                const sent_msg = document.createElement('span');
+                sent_msg.style="background-color: lightskyblue; padding: 16px; font-weight: bold; border-radius: 8px; margin-top: 8px; margin-left: 48px;";
+                sent_msg.innerHTML = msg.value;
+                document.getElementById('messages').appendChild(sent_msg);
+            }
+            function select(evt){
+                console.log(evt);
+                console.log(evt.target.value);
+            }
+    </script>
+    </body>
+</html>

@@ -4,6 +4,13 @@ import process from 'process';
 import {fileURLToPath} from 'url';
 import {dirname} from 'path';
 import { createServer } from 'http';
+import apiRouter from './src/api.js';
+import { Server } from 'socket.io';
+import socket from './websocket.js';
+import fetch from 'node-fetch';
+import { getDid, createConnectionInvitation } from './src/api.js';
+import { RegisterBody, TokenJSON, WalletResponse, WalletsResponse } from './types.js';
+import Events from './src/Events.js';
 const app = express();
 app.use(session({
     secret: 'keyboard cat',
@@ -13,13 +20,7 @@ app.use(session({
 })
 );
 const server = createServer(app);
-import apiRouter from '../api.js';
-import { Server } from 'socket.io';
-import socket from '../websocket.js';
-import WebSocket from 'ws';
-import fetch from 'node-fetch';
-import fs from 'fs';
-import { getDid, createConnectionInvitation } from '../api.js';
+
 
 const io = new Server(server);
 const args = process.argv.slice(2);
@@ -80,18 +81,6 @@ const updateWallet =  async (wallet_id:String): Promise<WalletResponse> => {
     }
 }
 
-interface WalletsResponse{
-    results: [
-        {
-            created_at: string,
-            wallet_id: string,
-            updated_at: string,
-            settings: Object,
-            key_manamegent_mode: string
-        }
-    ]
-}
-
 const getWallets = async (wallet_name?: String) : Promise<WalletsResponse> => {
     console.log('---> getWallets');
     //const response = await fetch(`${agency_url}/multitenancy/wallets?wallet_name=${wallet_name}`);
@@ -108,12 +97,7 @@ const getWallet = async (id?: String) : Promise<WalletResponse> => {
     return json;
 }
 
-interface RegisterBody{
-    did: string,
-    verkey: string,
-    alias?: string,
-    role: string
-}
+
 
 const register = async (did,verkey,alias = null, role = 'ENDORSER') => {
     let body:RegisterBody = {did:did, verkey:verkey, role: role};
@@ -174,10 +158,6 @@ const getStatus = async () => {
     }
 }
 
-interface TokenJSON {
-    token?: String,
-}
-
 const getToken = async (id) => {
     try {
         const response = await fetch(`${agency_url}/multitenancy/wallet/${id}/token`, {
@@ -193,41 +173,6 @@ const getToken = async (id) => {
         console.error(error);
         return null;
     }
-}
-
-
-
-const getConnections = async(token, mydid=null) => {
-    try {
-        const response = await fetch(`${agency_url}/connections${mydid?`?my_did=${mydid}`:''}`, {
-            method: 'GET',
-            headers: {
-                'Authorization': `Bearer ${token}`
-            }
-        });
-        const json:any = await response.json();
-        //console.log('connections', json)
-        return token;
-    } catch (error) {
-        console.error(error);
-        return null;
-    }
-}
-
-interface WalletResponse {
-    wallet_id: string,
-    created_at: string,
-    key_management_mode: string,
-    updated_at: string,
-    settings: {
-      'wallet.type': string,
-      'wallet.name': string,
-      'wallet.webhook_urls': [],
-      'wallet.dispatch_type': string,
-      default_label: string,
-      'wallet.id': string
-    },
-    token: string
 }
     
 const main = async(req) => {
@@ -271,19 +216,14 @@ const main = async(req) => {
         //console.log('did', did);
         const publicDid:any  = await getPublic(token, did.did);
         if(publicDid.result){
-            //console.log('public did', publicDid);
-        //const invitation = await createConnectionInvitation(token);
-        //console.log('invitation', JSON.stringify(invitation));
+            // do nothing for now
         }else{
             const register_result = await register(did.did, did.verkey, name);
             //console.log('registered a did', register_result);
             await assignPublic(token,did.did);
         }
-        getConnections(token);
     }
 }
-
-//main();
 
 /** init websocket stuff */
 socket(io);
@@ -298,21 +238,6 @@ app.use(async(req,res,next)=>{
 });
 
 app.use('/api', apiRouter);
-
-const Events = () => {
-    const listeners =  new Map<String, Function>();
-    const on = (evt, callback) => {
-        listeners.set(evt, callback);
-    };
-    const send = (evt, data) => {
-        const callback = listeners.get(evt);
-        callback(data);
-    }
-    return {
-        on:on,
-        send:send
-    }
-};
 
 const events = Events();
 

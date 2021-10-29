@@ -1,5 +1,5 @@
 import { Server } from "socket.io";
-import { getConnections, updateConnection } from "./api.js";
+import { getConnections, updateConnection } from "./src/api.js";
 
 const socket = (io: Server) => {
     io.on('connection', (socket) => {
