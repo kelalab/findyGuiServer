@@ -49,7 +49,7 @@ return (
   <Grommet full theme={theme}>
     <Router>
       <Switch>
-        <Route path="/yhteydet/:id/chat">
+        <Route path="/yhteydet/:name/chat">
           <Chat />
         </Route>
         <Route path="/yhteydet">

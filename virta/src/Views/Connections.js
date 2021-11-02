@@ -49,7 +49,7 @@ const Connections = (props) => {
                <Card>
                    <Heading level="2">{conn.their_label}</Heading>
                    {JSON.stringify(conn)}
-                   <Button label="Chat" primary onClick={() => history.push(`${conn.connection_id}/chat`)}/>
+                   <Button label="Chat" primary onClick={() => history.push(`${location.pathname}/${conn.their_label}/chat`)}/>
                 </Card>
                )
             })
