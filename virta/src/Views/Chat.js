@@ -14,9 +14,11 @@ const Chat = (props) => {
             <Main>
                 <Box>
                     {messages && messages.map((msg,idx) => {
+                        console.log(msg);
+                        console.log(idx);
                         return (
                             <Box>
-                                <Text>{msg.content}</Text>
+                                <Text>{msg}</Text>
                             </Box>
                         )
                     })}
