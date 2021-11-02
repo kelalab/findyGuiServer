@@ -254,7 +254,7 @@ app.use('/webhook', async(req,res,next) => {
     console.log('origURL', req.originalUrl);
     console.log('path', req.path);
     console.log('wallet: ', walletId);
-    events.send('new', req.body);
+    events.send('new', JSON.stringify({type: req.path, data:req.body}));
     res.status(200).send();
     next();
 });
