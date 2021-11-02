@@ -11,6 +11,7 @@ import fetch from 'node-fetch';
 import { getDid, createConnectionInvitation } from './src/api.js';
 import { RegisterBody, TokenJSON, WalletResponse, WalletsResponse } from './types.js';
 import Events from './src/Events.js';
+import { determinePort } from './src/util.js';
 const app = express();
 app.use(session({
     secret: 'keyboard cat',
@@ -28,7 +29,11 @@ const port_arg = args.find(arg => {
     console.log(arg.split('=')[0]);
     return arg.split('=')[0]==='port';
 });
-const port = port_arg && port_arg.split('=')[1] || '4000';
+const port_arg_value = port_arg?port_arg.split('=')[1]:null;
+const port_env = process.env.PORT;
+
+const port = determinePort(port_env,port_arg_value,'4000');
+
 let unusedport = port;
 console.log(port);
 
@@ -269,10 +274,10 @@ app.use('/events', async(req,res,next) =>{
 });
 
 app.get('/', (req, res) => {
-    res.sendFile(dirname(fileURLToPath(import.meta.url))+'/public/index.html');
+    res.sendFile(dirname(fileURLToPath(import.meta.url))+'/virta/index.html');
 })
 console.log('path', dirname(fileURLToPath(import.meta.url)));
-app.use(express.static('public'));
+app.use(express.static('bin/virta'));
 
 server.listen(port, () => {
     console.log(`server listening on port ${port}.`);

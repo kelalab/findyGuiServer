@@ -1,53 +1,9 @@
-import React, { Children } from 'react'
-import { Grommet, Header, Heading,  Button, Box } from 'grommet'
-import { Previous } from 'grommet-icons'
+import React, { useEffect } from 'react'
+import { Grommet } from 'grommet'
 import MainView from './Views/MainView'
-import { RouterContext } from './RouterContext'
-
-
-const Router = ({ children }) => {
-  const [path, setPath] = React.useState("/")
-
-  React.useEffect(() => {
-    const onPopState = () => setPath(document.location.pathname)
-    window.addEventListener('popstate', onPopState)
-    return () => window.removeEventListener('popstate', onPopState)
-  }, [])
-
-  const push = nextPath => {
-    if (nextPath !== path) {
-      window.history.pushState(undefined, undefined, nextPath)
-      setPath(nextPath)
-      window.scrollTo(0, 0)
-    }
-  }
-
-  const back = () => {
-    window.history.back();
-    console.log(window.history.state);
-    //setPath(window.history.)
-  }
-
-  return (
-    <RouterContext.Provider value={{ path, push, back }}>
-      {children}
-    </RouterContext.Provider>
-  )
-}
-
-const Routes = ({ children }) => {
-  const { path: contextPath } = React.useContext(RouterContext)
-  let found
-  Children.forEach(children, child => {
-    if (!found && contextPath === child.props.path) found = child
-  })
-  return found
-}
-
-const Route = ({ Component, path }) => {
-  const { path: contextPath } = React.useContext(RouterContext)
-  return contextPath === path ? <Component/> : null
-}
+import {BrowserRouter as Router, Route, Switch} from 'react-router-dom';
+import Connections from './Views/Connections'
+import Chat from './Views/Chat';
 
 const theme = {
   "global": {
@@ -68,29 +24,41 @@ const theme = {
   }
 }
 
-
-const Yhteydet = () => {
-  const { push } = React.useContext(RouterContext);
-
-  return (
-    <Header align="center" direction="row" flex={false} justify="center" gap="large" background={{"color":"brand"}}>
-      <Button icon={<Previous />} onClick={() => push("/")} />
-      <Heading level="1">Yhteydet</Heading>
-      <Box>
-
-      </Box>
-    </Header>
-  )
-}
-
 const App = () => {
+
+  useEffect(() => {
+    const sse = new EventSource('/events',
+      { withCredentials: true });
+    function getRealtimeData(data) {
+      // process the data here,
+      // then pass it to state to be rendered
+      console.log(data);
+    }
+    sse.onmessage = e => getRealtimeData(JSON.parse(e.data));
+    sse.onerror = () => {
+      // error log here 
+      
+      sse.close();
+    }
+    return () => {
+      sse.close();
+    };
+  }, []);
+
 return (
   <Grommet full theme={theme}>
     <Router>
-      <Routes>
-        <Route path="/" Component={MainView} />
-        <Route path="/yhteydet" Component={Yhteydet} />
-      </Routes>
+      <Switch>
+        <Route path="/yhteydet/:id/chat">
+          <Chat />
+        </Route>
+        <Route path="/yhteydet">
+          <Connections />
+        </Route>
+        <Route path="/">
+          <MainView />
+        </Route>
+      </Switch>
     </Router>
   </Grommet>
 )};

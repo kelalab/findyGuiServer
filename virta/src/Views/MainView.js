@@ -3,8 +3,11 @@ import { Box, Button, DropButton, Header, Heading, Image, Footer, Main } from "g
 import { Network, Menu } from 'grommet-icons';
 import { RouterContext } from '../RouterContext';
 import Invitation from './Invitation';
+import { withRouter } from 'react-router-dom';
 
-const MainView = () => {
+const MainView = (props) => {
+  console.log('props',props);
+  const {history, location, match} = props;
   const { push } = React.useContext(RouterContext);
   const [open, setopen] = React.useState(false);
   const [showinvitation, setShowinvitation] = React.useState(false);
@@ -24,6 +27,7 @@ const MainView = () => {
       console.error('unable to parse json');
     }
   }
+
   return (
     <Box overflow="auto" align="center" flex="grow">
       <Header align="center" direction="row" flex="grow" justify="center" gap="large" background={{"color":"brand"}} fill="horizontal">
@@ -32,7 +36,7 @@ const MainView = () => {
         </Heading>
         <DropButton dropAlign={{"top":"bottom"}} onClick={() => setopen(!open)} open={open} dropContent={(
           <Box align="center" justify="center" pad="medium" name="dropContent" background={{"color":"status-ok","dark":true}} round="small" margin="small">
-            <Button label="Yhteydet" primary={false} plain reverse secondary={false} type="button" active={false} icon={<Network />} onClick={() => push("/yhteydet")} />
+            <Button label="Yhteydet" primary={false} plain reverse secondary={false} type="button" active={false} icon={<Network />} onClick={() => history.push("/yhteydet")} />
           </Box>
         )}
          icon={<Menu />} primary size="large" dropProps={{"plain":true}} plain={false} />
@@ -54,4 +58,4 @@ const MainView = () => {
     </Box>
   )
 }
-export default MainView;
+export default withRouter(MainView);

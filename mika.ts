@@ -1,3 +1,4 @@
+const start = new Date();
 import express from 'express';
 import session from 'express-session';
 const app = express();
@@ -297,7 +298,7 @@ app.use(express.static('mika'));
 
 
 server.listen(port, () => {
-    console.log(`server listening on port ${port}.`);
+    console.log(`server booted up in ${new Date().getMilliseconds()-start.getMilliseconds()}ms and listening on port ${port}.`);
 });
 
 let unusedport = port;
