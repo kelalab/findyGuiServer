@@ -1,5 +1,6 @@
 import { Box, Button, Header, Heading, Main } from 'grommet';
 import { withRouter } from 'react-router-dom';
+import { Previous } from 'grommet-icons';
 
 const Chat = (props) => {
     console.log('props',props);
