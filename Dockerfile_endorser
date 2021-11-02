@@ -12,13 +12,13 @@ COPY tsconfig.json tsconfig.json
 COPY types.d.ts types.d.ts
 ARG FOLDER
 RUN npm i \
-&& cd ${FOLDER} \
+&& cd $FOLDER \
 && npm i
 #WORKDIR /src/${FOLDER}
-
+ARG FOLDER
 RUN ls -lha \
 && npm run build_endorser \
-&& cd ${FOLDER} \
+&& cd $FOLDER \
 && rm -rf node_modules
 WORKDIR /src
 RUN ls -lha bin
