@@ -32,6 +32,7 @@ const App = () => {
     function getRealtimeData(data) {
       // process the data here,
       // then pass it to state to be rendered
+      console.log('all data', data);
       console.log('event type', data.type);
       console.log('event data', data.data);
     }
