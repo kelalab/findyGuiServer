@@ -43,7 +43,7 @@ const App = () => {
       console.log('all data', data);
       console.log('event type', data.type);
       switch(data.type){
-        case '/topic/basicmessages':
+        case '/topic/basicmessages/':
           const msgdata = data.data;
           console.log('msg data', msgdata);
           newMessage(msgdata.contents);
