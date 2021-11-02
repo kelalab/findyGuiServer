@@ -1,10 +1,10 @@
-import { Box, Button, Header, Heading, Main } from 'grommet';
+import { Box, Button, Header, Heading, Main, Text, TextInput } from 'grommet';
 import { withRouter } from 'react-router-dom';
 import { Previous } from 'grommet-icons';
 
 const Chat = (props) => {
     console.log('props',props);
-    const {history, location, match} = props;
+    const {history, location, match, newMessage, messages} = props;
     return (
         <Box>
             <Header align="center" direction="row" flex={false} justify="center" gap="large" background={{"color":"brand"}}>
@@ -13,7 +13,17 @@ const Chat = (props) => {
             </Header>
             <Main>
                 <Box>
-
+                    {messages && messages.map((msg,idx) => {
+                        return (
+                            <Box>
+                                <Text>{msg.content}</Text>
+                            </Box>
+                        )
+                    })}
+                    <Box>
+                        <TextInput></TextInput>
+                        <Button label="Send"></Button>
+                    </Box>
                 </Box>
             </Main>
         </Box>

@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Grommet } from 'grommet'
 import MainView from './Views/MainView'
 import {BrowserRouter as Router, Route, Switch} from 'react-router-dom';
@@ -26,6 +26,14 @@ const theme = {
 
 const App = () => {
 
+  const [messages, setMessages] = useState([]);
+
+  const newMessage = (msg) => {
+    let msgs = [...messages];
+    msgs.push(msg);
+    setMessages(msgs);
+  }
+
   useEffect(() => {
     const sse = new EventSource('/events',
       { withCredentials: true });
@@ -34,7 +42,14 @@ const App = () => {
       // then pass it to state to be rendered
       console.log('all data', data);
       console.log('event type', data.type);
-      console.log('event data', data.data);
+      switch(data.type){
+        case '/topic/basicmessages':
+          const msgdata = data.data;
+          console.log('msg data', msgdata);
+          break;
+        default:
+          console.log('event data', data.data);
+      } 
     }
     sse.onmessage = e => getRealtimeData(JSON.parse(e.data));
     sse.onerror = () => {
@@ -52,7 +67,7 @@ return (
     <Router>
       <Switch>
         <Route path="/yhteydet/:name/chat">
-          <Chat />
+          <Chat messages={messages} newMessage={newMessage}/>
         </Route>
         <Route path="/yhteydet">
           <Connections />
