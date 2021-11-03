@@ -7,7 +7,8 @@ import { withRouter } from 'react-router-dom';
 const Connections = (props) => {
     console.log('props',props);
     const {history, location, match} = props;
-    const [connections, setConnections] = React.useState([]);
+    const { connections, setConnections } = props
+    //const [connections, setConnections] = React.useState([]);
     React.useEffect(
         () => {
         const getConnections = async() => {

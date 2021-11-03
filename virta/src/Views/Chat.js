@@ -17,7 +17,8 @@ const Chat = (props) => {
                         console.log(msg);
                         console.log(idx);
                         return (
-                            <Box>
+                            <Box background={{"color": "brand"}}>
+                                <Text>{}</Text>
                                 <Text>{msg}</Text>
                             </Box>
                         )

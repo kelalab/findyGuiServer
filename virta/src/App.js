@@ -14,7 +14,7 @@ const theme = {
       }
     },
     "font": {
-      "family": "-apple-system,\n         BlinkMacSystemFont, \n         \"Segoe UI\", \n         Roboto, \n         Oxygen, \n         Ubuntu, \n         Cantarell, \n         \"Fira Sans\", \n         \"Droid Sans\",  \n         \"Helvetica Neue\", \n         Arial, sans-serif,  \n         \"Apple Color Emoji\", \n         \"Segoe UI Emoji\", \n         \"Segoe UI Symbol\""
+      "family": "-apple-system, BlinkMacSystemFont, \n         \"Segoe UI\", \n         Roboto, \n         Oxygen, \n         Ubuntu, \n         Cantarell, \n         \"Fira Sans\", \n         \"Droid Sans\",  \n         \"Helvetica Neue\", \n         Arial, sans-serif,  \n         \"Apple Color Emoji\", \n         \"Segoe UI Emoji\", \n         \"Segoe UI Symbol\""
     }
   },
   "button": {
@@ -27,6 +27,8 @@ const theme = {
 const App = () => {
 
   const [messages, setMessages] = useState([]);
+  const [connections, setConnections] = React.useState([]);
+
 
   const newMessage = (msg) => {
     let msgs = [...messages];
@@ -46,7 +48,9 @@ const App = () => {
         case '/topic/basicmessages/':
           const msgdata = data.data;
           console.log('msg data', msgdata);
-          newMessage(msgdata.content);
+          const connid = msgdata.connection_id;
+          const connection = connections.find(conn => conn.connection_id === connid);
+          newMessage({sender:connection.their_label,content:msgdata.content});
           break;
         default:
           console.log('event data', data.data);
@@ -71,7 +75,7 @@ return (
           <Chat messages={messages} newMessage={newMessage}/>
         </Route>
         <Route path="/yhteydet">
-          <Connections />
+          <Connections connections={connections} setConnections={setConnections}/>
         </Route>
         <Route path="/">
           <MainView />
