@@ -50,7 +50,11 @@ const App = () => {
           console.log('msg data', msgdata);
           const connid = msgdata.connection_id;
           const connection = connections.find(conn => conn.connection_id === connid);
-          newMessage({sender:connection.their_label,content:msgdata.content});
+          if(connection){
+            newMessage({sender:connection.their_label,content:msgdata.content});
+          }else{
+            console.warn('should add message but cannot find sender');
+          }
           break;
         default:
           console.log('event data', data.data);
@@ -72,7 +76,7 @@ return (
     <Router>
       <Switch>
         <Route path="/yhteydet/:name/chat">
-          <Chat messages={messages} newMessage={newMessage}/>
+          <Chat messages={messages} newMessage={newMessage} connections={connections} />
         </Route>
         <Route path="/yhteydet">
           <Connections connections={connections} setConnections={setConnections}/>
