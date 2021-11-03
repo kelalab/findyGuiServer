@@ -46,7 +46,7 @@ const App = () => {
         case '/topic/basicmessages/':
           const msgdata = data.data;
           console.log('msg data', msgdata);
-          newMessage(msgdata.contents);
+          newMessage(msgdata.content);
           break;
         default:
           console.log('event data', data.data);
