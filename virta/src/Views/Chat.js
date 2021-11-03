@@ -17,9 +17,9 @@ const Chat = (props) => {
                         console.log(msg);
                         console.log(idx);
                         return (
-                            <Box background={{"color": "brand"}}>
-                                <Text>{msg.sender}</Text>
-                                <Text>{msg.content}</Text>
+                            <Box overflow="auto" align="start" background={{"color":"brand"}} round="small" pad="small" justify="start" direction="column">
+                                <Text size="xsmall">{msg.sender}</Text>
+                                <Text size="small" weight="bold">{msg.content}</Text>
                             </Box>
                         )
                     })}
