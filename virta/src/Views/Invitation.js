@@ -8,11 +8,18 @@ const Invitation = ({close, data}) => {
     console.log('INVITATION', close, data);
   
     const copyToClipBoard = () => {
-      window.navigator.clipboard.writeText(JSON.stringify(data)).then(function() {
-        console.log("Copied to clipboard successfully!");
-      }, function() {
-        console.error("Unable to write to clipboard. :-(");
-      });
+      if(navigator.clipboard && window.isSecureContext){
+        navigator.clipboard.writeText(JSON.stringify(data)).then(function() {
+          console.log("Copied to clipboard successfully!");
+        }, function() {
+          console.error("Unable to write to clipboard. :-(");
+        });
+      } else {
+        let invitation_element = document.getElementById('invitation');
+        invitation_element.select();
+        document.execCommand('copy')
+      }
+      
     }
   return (
     <Box overflow="auto" align="center" flex="grow">
@@ -28,7 +35,7 @@ const Invitation = ({close, data}) => {
               Kopioi alla oleva kutsu lompakkoosi.
             </Paragraph>
             <Box align="center" justify="center">
-              <Paragraph style={{wordBreak:'break-all'}}>{JSON.stringify(data)}</Paragraph>
+              <Paragraph id="invitation" style={{wordBreak:'break-all'}}>{JSON.stringify(data)}</Paragraph>
             </Box>
           </Box>
           <Box align="center" justify="center" flex="grow" direction="row" gap="medium">
