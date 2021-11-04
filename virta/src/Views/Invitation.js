@@ -8,7 +8,7 @@ const Invitation = ({close, data}) => {
     console.log('INVITATION', close, data);
   
     const copyToClipBoard = () => {
-      navigator.clipboard.writeText(JSON.stringify(data)).then(function() {
+      window.navigator.clipboard.writeText(JSON.stringify(data)).then(function() {
         console.log("Copied to clipboard successfully!");
       }, function() {
         console.error("Unable to write to clipboard. :-(");
