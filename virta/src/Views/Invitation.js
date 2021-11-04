@@ -15,7 +15,7 @@ const Invitation = ({close, data}) => {
           console.error("Unable to write to clipboard. :-(");
         });
       } else {
-        let invitation_element = document.getElementById('invitation');
+        let invitation_element = document.querySelector('#invitation');
         invitation_element.select();
         document.execCommand('copy')
       }
