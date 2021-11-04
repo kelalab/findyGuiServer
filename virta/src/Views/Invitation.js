@@ -15,9 +15,21 @@ const Invitation = ({close, data}) => {
           console.error("Unable to write to clipboard. :-(");
         });
       } else {
-        let invitation_element = document.querySelector('#invitation');
-        invitation_element.select();
-        document.execCommand('copy')
+        let textarea = document.createElement("textarea");
+        textarea.textContent = JSON.stringify(data);
+        textarea.style.position = "fixed";  // Prevent scrolling to bottom of page in Microsoft Edge.
+        document.body.appendChild(textarea);
+        textarea.select();
+        try {
+            return document.execCommand("copy");  // Security exception may be thrown by some browsers.
+        }
+        catch (ex) {
+            console.warn("Copy to clipboard failed.", ex);
+            return false;
+        }
+        finally {
+            document.body.removeChild(textarea);
+        }
       }
       
     }
