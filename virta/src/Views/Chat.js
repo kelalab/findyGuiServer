@@ -6,7 +6,7 @@ const Chat = (props) => {
     console.log('props',props);
     const {history, location, match, newMessage, messages} = props;
     return (
-        <Box>
+        <Box pad="large">
             <Header elevation="medium" align="center" direction="row" flex={false} justify="center" gap="large" background={{"color":"brand"}}>
                 <Button icon={<Previous />} onClick={() => history.goBack()} />
                 <Heading level="1">Chat</Heading>
