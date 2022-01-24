@@ -33,9 +33,12 @@ const port_arg_value = port_arg?port_arg.split('=')[1]:null;
 const port_env = process.env.PORT;
 
 const agency_arg = args.find(arg => arg.split('=')[0].toLowerCase()==='agency_url');
+const agency_env = process.env.AGENCY_URL;
 let agency_url_val;
 if(agency_arg){
     agency_url_val = agency_arg.split('=')[1];
+}else if(agency_env){
+    agency_url_val = agency_env;
 }
 console.log('agency url',agency_url_val);
 
