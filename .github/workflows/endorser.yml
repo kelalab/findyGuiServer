@@ -21,13 +21,8 @@ on:
       - main
 
 env:
-  RESOURCEGROUPNAME: "Findy"
-  LOCATION: "North Europe"
   IMAGENAME: "endorser"
-  REGISTRYSKU: "Standard"
-  SUBSCRIPTIONID: "81fe6fbd-ec53-4c4d-aac1-0eb01d6bf6c4"
-  REGISTRYLOCATION: "North Europe"
-  REGISTRYNAME: "kelalab"
+  ORGANIZATION: "kelalab"
   DOCKERFILE: "Dockerfile_endorser"
 
 jobs:
@@ -37,22 +32,13 @@ jobs:
     environment: production
     steps:
     - uses: actions/checkout@v2
-    - name: Login to Azure
-      uses: azure/login@v1
-      with:
-        creds: ${{ secrets.AZURE_CREDENTIALS }}
+    - name: Build image
+      run: docker build "$GITHUB_WORKSPACE" -f  ${{ env.DOCKERFILE }} -t ghcr.io/${{env.ORGANIZATION}}/${{ env.IMAGENAME }}:${{ github.sha }}
 
-    - name: Build and push webhook image to ACR
-      uses: azure/docker-login@v1
-      id: build-webhook
-      with:
-        login-server: ${{ env.REGISTRYNAME }}.azurecr.io
-        username: ${{ secrets.REGISTRY_USERNAME }}
-        password: ${{ secrets.REGISTRY_PASSWORD }}
-        build-args: FOLDER=virta
-    - run: |
-        docker build "$GITHUB_WORKSPACE" -f  ${{ env.DOCKERFILE }} -t ${{ env.REGISTRYNAME }}.azurecr.io/${{ env.IMAGENAME }}:${{ github.sha }}
-        docker push ${{ env.REGISTRYNAME }}.azurecr.io/${{ env.IMAGENAME }}:${{ github.sha }}
-        docker tag ${{ env.REGISTRYNAME }}.azurecr.io/${{ env.IMAGENAME }}:${{ github.sha }} ${{ env.REGISTRYNAME }}.azurecr.io/${{ env.IMAGENAME }}:latest
-        docker push ${{ env.REGISTRYNAME }}.azurecr.io/${{ env.IMAGENAME }}:latest
+    - name: Log in to registry
+      run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
+    - name: Build and push webhook image to ghcr
+      run: |
+         docker tag ghcr.io/${{env.ORGANIZATION}}/${{ env.IMAGENAME }}:${{ github.sha }} ghcr.io/${{env.ORGANIZATION}}/${{ env.IMAGENAME }}:latest
+         docker push ghcr.io/${{env.ORGANIZATION}}/${{ env.IMAGENAME }}:latest

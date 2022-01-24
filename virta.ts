@@ -32,13 +32,27 @@ const port_arg = args.find(arg => {
 const port_arg_value = port_arg?port_arg.split('=')[1]:null;
 const port_env = process.env.PORT;
 
+const agency_arg = args.find(arg => arg.split('=')[0].toLowerCase()==='agency_url');
+let agency_url_val;
+if(agency_arg){
+    agency_url_val = agency_arg.split('=')[1];
+}
+console.log('agency url',agency_url_val);
+
+const von_web_arg = args.find(arg => arg.split('=')[0].toLowerCase()==='von_webserver_url');
+let von_web_arg_val;
+if(von_web_arg){
+    von_web_arg_val = von_web_arg.split('=')[1];
+}
+console.log('vonurl',von_web_arg_val);
+
 const port = determinePort(port_env,port_arg_value,'4000');
 
 let unusedport = port;
 console.log(port);
 
-const agency_url = 'http://13.79.168.138:8080';
-const register_url = 'http://13.79.168.138';
+const agency_url = agency_url_val || 'http://13.79.168.138:8080';
+const register_url = von_web_arg_val || agency_url.replace(':8080', '');
 
 const createWallet = async (wallet_name?:String): Promise<WalletResponse> => {
     try {

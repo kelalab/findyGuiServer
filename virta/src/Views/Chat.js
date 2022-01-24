@@ -6,13 +6,13 @@ const Chat = (props) => {
     console.log('props',props);
     const {history, location, match, newMessage, messages} = props;
     return (
-        <Box pad="large">
+        <Box >
             <Header elevation="medium" align="center" direction="row" flex={false} justify="center" gap="large" background={{"color":"brand"}}>
                 <Button icon={<Previous />} onClick={() => history.goBack()} />
                 <Heading level="1">Chat</Heading>
             </Header>
             <Main>
-                <Box>
+                <Box pad="large">
                     {messages && messages.map((msg,idx) => {
                         console.log(msg);
                         console.log(idx);
