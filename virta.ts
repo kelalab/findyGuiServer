@@ -60,7 +60,7 @@ const port = determinePort(port_env,port_arg_value,'4000');
 let unusedport = port;
 console.log(port);
 
-const agency_url = agency_url_val || 'http://13.79.168.138:8080';
+const agency_url = agency_url_val?agency_url_val:'http://13.79.168.138:8080';
 const register_url = von_web_arg_val || agency_url.replace(':8080', '');
 
 const createWallet = async (wallet_name?:String): Promise<WalletResponse> => {
