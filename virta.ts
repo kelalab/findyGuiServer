@@ -29,6 +29,9 @@ const port_arg = args.find(arg => {
     console.log(arg.split('=')[0]);
     return arg.split('=')[0]==='port';
 });
+
+const webhook_env = process.env.WEBHOOK_URL;
+
 const port_arg_value = port_arg?port_arg.split('=')[1]:null;
 const port_env = process.env.PORT;
 
@@ -90,7 +93,7 @@ const updateWallet =  async (wallet_id:String): Promise<WalletResponse> => {
             body: JSON.stringify({
                 wallet_webhook_urls: [
                     //`http://localhost:${unusedport}/webhook`,
-                    `${register_url}:4000/webhook`,
+                    `${webhook_env? webhook_env: register_url+':4000/webhook'}`,
                 ]
             }),
         });
