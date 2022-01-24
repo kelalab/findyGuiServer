@@ -43,9 +43,12 @@ if(agency_arg){
 console.log('agency url',agency_url_val);
 
 const von_web_arg = args.find(arg => arg.split('=')[0].toLowerCase()==='von_webserver_url');
+const von_web_env = process.env.VON_WEBSERVER_URL;
 let von_web_arg_val;
 if(von_web_arg){
     von_web_arg_val = von_web_arg.split('=')[1];
+}else if(von_web_env){
+    von_web_arg_val = von_web_env;
 }
 console.log('vonurl',von_web_arg_val);
 
