@@ -12,6 +12,7 @@ import { getDid, createConnectionInvitation } from './src/api.js';
 import { RegisterBody, TokenJSON, WalletResponse, WalletsResponse } from './types.js';
 import Events from './src/Events.js';
 import { determinePort } from './src/util.js';
+import { AGENCY_URL } from './constants.js';
 const app = express();
 app.use(session({
     secret: 'keyboard cat',
@@ -35,15 +36,7 @@ const webhook_env = process.env.WEBHOOK_URL;
 const port_arg_value = port_arg?port_arg.split('=')[1]:null;
 const port_env = process.env.PORT;
 
-const agency_arg = args.find(arg => arg.split('=')[0].toLowerCase()==='agency_url');
-const agency_env = process.env.AGENCY_URL;
-let agency_url_val;
-if(agency_arg){
-    agency_url_val = agency_arg.split('=')[1];
-}else if(agency_env){
-    agency_url_val = agency_env;
-}
-console.log('agency url',agency_url_val);
+console.log('agency url',AGENCY_URL);
 
 const von_web_arg = args.find(arg => arg.split('=')[0].toLowerCase()==='von_webserver_url');
 const von_web_env = process.env.VON_WEBSERVER_URL;
@@ -60,7 +53,7 @@ const port = determinePort(port_env,port_arg_value,'4000');
 let unusedport = port;
 console.log(port);
 
-const agency_url = agency_url_val?agency_url_val:'http://13.79.168.138:8080';
+const agency_url = AGENCY_URL;
 const register_url = von_web_arg_val || agency_url.replace(':8080', '');
 
 const createWallet = async (wallet_name?:String): Promise<WalletResponse> => {
