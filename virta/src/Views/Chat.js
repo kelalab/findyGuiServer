@@ -13,10 +13,10 @@ const Chat = (props) => {
         console.log('sending msg', message);
         const resp = await fetch('/api/send_message', {
             method: 'POST',
-            body:{
+            body: JSON.stringify({
                 message: message,
                 recipient: connection
-            }
+            })
         })
         newMessage(message);
     }
