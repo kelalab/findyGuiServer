@@ -45,7 +45,7 @@ const Chat = (props) => {
                     })}
                     <Box>
                         <TextInput onChange={handleChange}></TextInput>
-                        <Button label="Send" onClick={newMessage}></Button>
+                        <Button label="Send" onClick={sendMessage}></Button>
                     </Box>
                 </Box>
             </Main>
