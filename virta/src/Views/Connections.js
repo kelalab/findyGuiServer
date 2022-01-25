@@ -7,7 +7,7 @@ import { withRouter } from 'react-router-dom';
 const Connections = (props) => {
     console.log('props',props);
     const {history, location, match} = props;
-    const { connections, setConnections } = props
+    const { connections, setConnections, setselectedconnection } = props
     //const [connections, setConnections] = React.useState([]);
     React.useEffect(
         () => {
@@ -37,6 +37,11 @@ const Connections = (props) => {
         }
         getConnections();
     }, []);
+
+    const openChat = (their_label, connection_id) => {
+        setselectedconnection(connection_id);
+        history.push(`${location.pathname}/${their_label}/chat`);
+    }
     
     return (
     <Box>
@@ -50,7 +55,7 @@ const Connections = (props) => {
                <Card>
                    <Heading level="2">{conn.their_label}</Heading>
                    {JSON.stringify(conn)}
-                   <Button label="Chat" primary onClick={() => history.push(`${location.pathname}/${conn.their_label}/chat`)}/>
+                   <Button label="Chat" primary onClick={() => openChat(conn.their_label, conn.connection_id)}/>
                 </Card>
                )
             })

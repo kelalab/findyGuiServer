@@ -28,6 +28,7 @@ const App = () => {
 
   const [messages, setMessages] = useState([]);
   const [connections, setConnections] = React.useState([]);
+  const [selectedconnection, setselectedconnection] = React.useState('');
 
 
   const newMessage = (msg) => {
@@ -76,10 +77,10 @@ return (
     <Router>
       <Switch>
         <Route path="/yhteydet/:name/chat">
-          <Chat messages={messages} newMessage={newMessage} connections={connections} />
+          <Chat messages={messages} newMessage={newMessage} connection={selectedconnection} />
         </Route>
         <Route path="/yhteydet">
-          <Connections connections={connections} setConnections={setConnections}/>
+          <Connections connections={connections} setConnections={setConnections} setselectedconnection={setselectedconnection}/>
         </Route>
         <Route path="/">
           <MainView />

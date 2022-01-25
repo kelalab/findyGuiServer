@@ -1,10 +1,30 @@
 import { Box, Button, Header, Heading, Main, Text, TextInput } from 'grommet';
 import { withRouter } from 'react-router-dom';
 import { Previous } from 'grommet-icons';
+import { useState } from 'react';
 
 const Chat = (props) => {
     console.log('props',props);
+    const { connection } = props;
+    const [message, setmessage] = useState('');
     const {history, location, match, newMessage, messages} = props;
+
+    const sendMessage = async(e) => {
+        console.log('sending msg', message);
+        const resp = await fetch('/api/send_message', {
+            method: 'POST',
+            body:{
+                message: message,
+                recipient: connection
+            }
+        })
+        newMessage(message);
+    }
+
+    const handleChange = (e) => {
+        setmessage(e.target.value);
+    }
+
     return (
         <Box >
             <Header elevation="medium" align="center" direction="row" flex={false} justify="center" gap="large" background={{"color":"brand"}}>
@@ -24,8 +44,8 @@ const Chat = (props) => {
                         )
                     })}
                     <Box>
-                        <TextInput></TextInput>
-                        <Button label="Send"></Button>
+                        <TextInput onChange={handleChange}></TextInput>
+                        <Button label="Send" onClick={newMessage}></Button>
                     </Box>
                 </Box>
             </Main>

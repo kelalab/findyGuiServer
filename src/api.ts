@@ -160,6 +160,7 @@ export const getDid = async (token: String) => {
             'Authorization': `Bearer ${token}`,
         }
     });
+    console.log('existing did res', existing_res);
     const existing:any = await existing_res.json();
     console.log('existing dids: ', existing);
  
