@@ -17,8 +17,11 @@ const Chat = (props) => {
                 message: message,
                 recipient: connection
             })
-        })
-        newMessage(message);
+        });
+        const json = await resp.json();
+        console.log('msg send response', json);
+        newMessage({sender: 'me' ,message:message});
+        setmessage('');
     }
 
     const handleChange = (e) => {
@@ -37,14 +40,14 @@ const Chat = (props) => {
                         console.log(msg);
                         console.log(idx);
                         return (
-                            <Box margin={{"top":"small"}} overflow="auto" align="start" background={{"color":"brand", "right":"xlarge"}} round="small" pad="small" justify="start" direction="column">
+                            <Box margin={{"top":"small"}} overflow="auto" align="start" background={{"color": "brand", "opacity":msg.sender === 'me'? "medium" : "undefined", "right":"xlarge"}} round="small" pad="small" justify="start" direction="column">
                                 <Text size="xsmall">{msg.sender}</Text>
                                 <Text size="small" weight="bold">{msg.content}</Text>
                             </Box>
                         )
                     })}
                     <Box>
-                        <TextInput onChange={handleChange}></TextInput>
+                        <TextInput onChange={handleChange} value={message}></TextInput>
                         <Button label="Send" onClick={sendMessage}></Button>
                     </Box>
                 </Box>
