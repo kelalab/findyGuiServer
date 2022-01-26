@@ -32,7 +32,9 @@ const App = () => {
 
 
   const newMessage = (msg) => {
+    console.log('newMessage', msg, messages);
     let msgs = [...messages];
+    console.log('msgs', msgs);
     msgs.push(msg);
     setMessages(msgs);
   }
