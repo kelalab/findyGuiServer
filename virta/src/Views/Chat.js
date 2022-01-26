@@ -19,7 +19,7 @@ const Chat = (props) => {
             })
         });
         if(resp.status === 200){
-            newMessage({sender: 'me' ,message:message});
+            newMessage({sender: 'me', content: message});
             setmessage('');
         }else {
             console.error('msg send failed');
