@@ -42,7 +42,7 @@ const Chat = (props) => {
                         console.log(msg);
                         console.log(idx);
                         return (
-                            <Box margin={{"top":"small"}} overflow="auto" align="start" background={{"color": "brand", "opacity": msg.sender === 'me'? "medium" : 1.0, "right":"xlarge"}} round="small" pad="small" justify="start" direction="column">
+                            <Box margin={{"top":"small", "right": msg.sender === 'me' ? 'auto': 'xlarge', "left": msg.sender === 'me' ? 'xlarge': 'auto'}} overflow="auto" align="start" background={{"color": "brand", "opacity": msg.sender === 'me'? "medium" : 1.0, "right":"xlarge"}} round="small" pad="small" justify="start" direction="column">
                                 <Text size="xsmall">{msg.sender}</Text>
                                 <Text size="small" weight="bold">{msg.content}</Text>
                             </Box>
