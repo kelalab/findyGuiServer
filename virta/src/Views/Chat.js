@@ -18,10 +18,12 @@ const Chat = (props) => {
                 recipient: connection
             })
         });
-        const json = await resp.json();
-        console.log('msg send response', json);
-        newMessage({sender: 'me' ,message:message});
-        setmessage('');
+        if(resp.status === 200){
+            newMessage({sender: 'me' ,message:message});
+            setmessage('');
+        }else {
+            console.error('msg send failed');
+        }
     }
 
     const handleChange = (e) => {
