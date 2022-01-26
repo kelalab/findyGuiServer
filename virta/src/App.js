@@ -72,7 +72,7 @@ const App = () => {
     return () => {
       sse.close();
     };
-  }, [connections]);
+  }, [connections, messages]);
 
 return (
   <Grommet full theme={theme}>
