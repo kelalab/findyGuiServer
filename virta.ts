@@ -8,7 +8,7 @@ import apiRouter from './src/api.js';
 import { Server } from 'socket.io';
 import socket from './websocket.js';
 import fetch from 'node-fetch';
-import { getDid, createConnectionInvitation } from './src/api.js';
+import { getDid } from './src/api.js';
 import { RegisterBody, TokenJSON, WalletResponse, WalletsResponse } from './types.js';
 import Events from './src/Events.js';
 import { determinePort } from './src/util.js';
@@ -195,6 +195,40 @@ const getToken = async (id) => {
         return null;
     }
 }
+
+const createSchema = async (token) => {
+    const schema = {
+        schema_name: 'student_db_schema',
+        schema_version: '1.0',
+        attributes: {
+            
+        }
+    }
+    const resp = await fetch(`${agency_url}/schemas`, {
+        method: 'POST',
+        body: JSON.stringify(schema),
+        headers: {
+            'Authorization': `Bearer ${token}`
+        }
+    });
+    console.log(resp);
+}
+
+const getSchemas = async (token) => {
+    const resp = await fetch(`${agency_url}/schemas`, {
+        method: 'GET',
+        headers: {
+            'Authorization': `Bearer ${token}`
+        }
+    });
+    console.log(resp);
+    try{
+        const json = await resp.json();
+        console.log('schemasjson', json);
+    }catch(error){
+        console.error('not json')
+    }
+}
     
 const main = async(req) => {
     if(!req.session.token){
@@ -238,6 +272,7 @@ const main = async(req) => {
         const publicDid:any  = await getPublic(token, did.did);
         if(publicDid.result){
             // do nothing for now
+            await getSchemas(token);
         }else{
             const register_result = await register(did.did, did.verkey, name);
             //console.log('registered a did', register_result);
