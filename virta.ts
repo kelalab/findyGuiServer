@@ -203,14 +203,16 @@ const createSchema = async (token) => {
         attributes: [
             'student_id',
             'active'
-        ]
-            
+        ]   
     }
+    const body = JSON.stringify(schema);
+    console.log('schema', body);
     const resp = await fetch(`${agency_url}/schemas`, {
         method: 'POST',
-        body: JSON.stringify(schema),
+        body: body,
         headers: {
-            'Authorization': `Bearer ${token}`
+            'Authorization': `Bearer ${token}`,
+            'Content-type': 'application/json'
         }
     });
     console.log(resp);
