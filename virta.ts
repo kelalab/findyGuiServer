@@ -279,7 +279,7 @@ const main = async(req) => {
         if(publicDid.result){
             // do nothing for now
             const schemas:any = await getSchemas(token);
-            if( schemas.length === 0){
+            if( schemas.schema_ids.length === 0){
                 console.log('no schemas?');
                 await createSchema(token);
             }
