@@ -200,9 +200,11 @@ const createSchema = async (token) => {
     const schema = {
         schema_name: 'student_db_schema',
         schema_version: '1.0',
-        attributes: {
+        attributes: [
+            'student_id',
+            'active'
+        ]
             
-        }
     }
     const resp = await fetch(`${agency_url}/schemas`, {
         method: 'POST',
@@ -215,7 +217,7 @@ const createSchema = async (token) => {
 }
 
 const getSchemas = async (token) => {
-    const resp = await fetch(`${agency_url}/schemas`, {
+    const resp = await fetch(`${agency_url}/schemas/created`, {
         method: 'GET',
         headers: {
             'Authorization': `Bearer ${token}`
