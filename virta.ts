@@ -214,6 +214,8 @@ const createSchema = async (token) => {
         }
     });
     console.log(resp);
+    const json = await resp.json();
+    console.log(json);
 }
 
 const getSchemas = async (token) => {
@@ -227,8 +229,10 @@ const getSchemas = async (token) => {
     try{
         const json = await resp.json();
         console.log('schemasjson', json);
+        return json;
     }catch(error){
         console.error('not json')
+        return [];
     }
 }
     
@@ -274,7 +278,11 @@ const main = async(req) => {
         const publicDid:any  = await getPublic(token, did.did);
         if(publicDid.result){
             // do nothing for now
-            await getSchemas(token);
+            const schemas:any = await getSchemas(token);
+            if( schemas.length === 0){
+                console.log('no schemas?');
+                await createSchema(token);
+            }
         }else{
             const register_result = await register(did.did, did.verkey, name);
             //console.log('registered a did', register_result);
