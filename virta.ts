@@ -197,6 +197,7 @@ const getToken = async (id) => {
 }
 
 const createSchema = async (token) => {
+    console.log('create_schema', token);
     const schema = {
         schema_name: 'student_db_schema',
         schema_version: '1.0',
