@@ -9,7 +9,7 @@ import { Server } from 'socket.io';
 import socket from './websocket.js';
 import fetch from 'node-fetch';
 import { getDid } from './src/api.js';
-import { RegisterBody, TokenJSON, WalletResponse, WalletsResponse } from './types.js';
+import { RegisterBody, SchemaJSON, TokenJSON, WalletResponse, WalletsResponse } from './types.js';
 import Events from './src/Events.js';
 import { determinePort } from './src/util.js';
 import { AGENCY_URL } from './constants.js';
@@ -196,7 +196,9 @@ const getToken = async (id) => {
     }
 }
 
-const createSchema = async (token) => {
+
+
+const createSchemaAndCredDef = async (token) => {
     console.log('create_schema', token);
     const schema = {
         schema_name: 'student_db_schema',
@@ -216,9 +218,26 @@ const createSchema = async (token) => {
             'Content-type': 'application/json'
         }
     });
-    console.log(resp);
-    const json = await resp.json();
+    //console.log(resp);
+    const json:SchemaJSON = await resp.json();
     console.log(json);
+    const schema_id = json.schema_id;
+    const creddef = JSON.stringify({
+        support_revocation: false,
+        tag: 'default',
+        schema_id: schema_id
+    });
+    const cred_resp = await fetch(`${agency_url}/credential-definitions`, {
+        method: 'POST',
+        body: creddef,
+        headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-type': 'application/json'
+        }
+    });
+    console.log(cred_resp);
+    const cred_json:any = await cred_resp.json();
+    console.log('creddef', cred_json);
 }
 
 const getSchemas = async (token) => {
@@ -285,7 +304,7 @@ const main = async(req) => {
             if( schemas.schema_ids.length === 0){
                 console.log('no schemas?');
                 try{
-                    await createSchema(token);
+                    await createSchemaAndCredDef(token);
                 }catch(ex){
                     console.error(ex);
                 }

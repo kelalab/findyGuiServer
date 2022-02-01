@@ -36,3 +36,15 @@ export interface RegisterBody{
     alias?: string,
     role: string
 }
+
+interface SchemaJSON{
+    schema_id?: string,
+    schema?: {
+        ver: string,
+        id: string,
+        name: string,
+        version: string,
+        attrNames: [],
+        seqNo: number
+    }
+}
