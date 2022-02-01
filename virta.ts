@@ -284,7 +284,11 @@ const main = async(req) => {
             const schemas:any = await getSchemas(token);
             if( schemas.schema_ids.length === 0){
                 console.log('no schemas?');
-                await createSchema(token);
+                try{
+                    await createSchema(token);
+                }catch(ex){
+                    console.error(ex);
+                }
             }
         }else{
             const register_result = await register(did.did, did.verkey, name);
