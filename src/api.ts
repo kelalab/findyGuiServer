@@ -101,7 +101,10 @@ apiRouter.post('/credential/issue', async(req,res,next) => {
         method: 'POST',
         headers: {
             'Authorization': `Bearer ${token}`,
-        }
+        },
+        body: JSON.stringify({
+            comment: 'powah issued'
+        })
     });
     console.log('issue_resp', issue_resp);
 });
