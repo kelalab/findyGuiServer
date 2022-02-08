@@ -75,6 +75,15 @@ const App = () => {
             console.warn('should add message but cannot find sender');
           }
           break;
+        case '/topic/issue_credential/':
+          const ex_data = data.data;
+          await fetch('/api/credential/issue', {
+            method: 'POST',
+            body: JSON.stringify({
+              cred_ex_id: ex_data.credential_exchange_id
+            })
+          });
+          break;
         default:
           console.log('event data', data.data);
       } 
