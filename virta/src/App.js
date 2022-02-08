@@ -61,7 +61,7 @@ const App = () => {
               method: 'POST',
               body: JSON.stringify({
                   message: intro_msg,
-                  recipient: connection.their_label
+                  recipient: connection.connection_id
               })
             });
             newMessage({sender:'me',content:intro_msg,connection_id: connection.connection_id});

@@ -95,7 +95,7 @@ apiRouter.get('/connections', async (req,res,next)=>{
 apiRouter.post('/credential/offer', async(req,res,next)=> {
     console.log('---> creating a credential offer');
     const token = req.session.token;
-    const cred_defs = await getCredDefs;
+    const cred_defs = await getCredDefs(token);
     console.log('--- credential_definitions', cred_defs);
 })
 
