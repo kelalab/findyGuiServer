@@ -68,7 +68,7 @@ const App = () => {
             await fetch('/api/credential/offer', {
               method: 'POST',
               body: JSON.stringify({
-
+                connection: connection.connection_id
               })
             });
           }else{

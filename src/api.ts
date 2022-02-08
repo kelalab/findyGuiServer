@@ -95,11 +95,48 @@ apiRouter.get('/connections', async (req,res,next)=>{
 apiRouter.post('/credential/offer', async(req,res,next)=> {
     console.log('---> creating a credential offer');
     const token = req.session.token;
-    const cred_defs = await getCredDefs(token);
+    const data = req.body;
+    const data_json = JSON.parse(req.body);
+    const connnection_id = data_json.connection;
+    const cred_defs:any = await getCredDefs(token);
     console.log('--- credential_definitions', cred_defs);
+    // 
+    const cred_def_id = cred_defs.credential_definition_ids[0];
+    const send_offer_resp = await fetch(`${AGENCY_URL}/issue-credential/send-offer`, {
+        method: 'POST',
+        headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-type': 'application/json'
+        },
+        body: JSON.stringify({
+            connection_id: connnection_id,
+            cred_def_id: cred_def_id,
+            credential_preview: {
+                '@type': 'issue-credentials/1.0/credential_preview',
+                'attributes': [
+                    {
+                        'mime-type': 'text/plain',
+                        'name': 'student_id',
+                        'value': 'alice_id'
+                    },
+                    {
+                        'mime-type': 'text/plain',
+                        'name': 'active',
+                        'value': 'true'
+                    }
+                ] 
+            }
+        })
+    });
+    console.log(send_offer_resp);
+    res.status(200).send();
 })
 
-export const getCredDefs = async(token) => {
+interface Cred_def_resp{
+    credential_definition_ids?: []
+}
+
+export const getCredDefs = async(token):Promise<Cred_def_resp> => {
     const data = await fetch(`${AGENCY_URL}/credential-definitions/created`, {
         headers: {
             'Authorization': `Bearer ${token}`
