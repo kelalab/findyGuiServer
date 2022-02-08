@@ -77,8 +77,8 @@ const App = () => {
           break;
         case '/topic/issue_credential/':
           const ex_data = data.data;
-          console.log('state', data.state);
-          if(data.state==='request_received'){
+          console.log('state', ex_data.state);
+          if(ex_data.state==='request_received'){
             await fetch('/api/credential/issue', {
               method: 'POST',
               body: JSON.stringify({
