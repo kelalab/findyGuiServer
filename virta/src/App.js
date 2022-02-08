@@ -42,7 +42,7 @@ const App = () => {
   useEffect(() => {
     const sse = new EventSource('/events',
       { withCredentials: true });
-    function getRealtimeData(data) {
+    async function getRealtimeData(data) {
       // process the data here,
       // then pass it to state to be rendered
       console.log('all data', data);
@@ -54,7 +54,23 @@ const App = () => {
           const connid = msgdata.connection_id;
           const connection = connections.find(conn => conn.connection_id === connid);
           if(connection){
-            newMessage({sender:connection.their_label,content:msgdata.content});
+            newMessage({sender:connection.their_label,content:msgdata.content,connection_id: connection.connection_id});
+            //
+            const intro_msg = 'Hei, kuinka voin auttaa?';
+            const resp = await fetch('/api/send_message', {
+              method: 'POST',
+              body: JSON.stringify({
+                  message: intro_msg,
+                  recipient: connection.their_label
+              })
+            });
+            newMessage({sender:'me',content:intro_msg,connection_id: connection.connection_id});
+            await fetch('/api/credential/offer', {
+              method: 'POST',
+              body: JSON.stringify({
+
+              })
+            });
           }else{
             console.warn('should add message but cannot find sender');
           }

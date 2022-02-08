@@ -19,7 +19,7 @@ const Chat = (props) => {
             })
         });
         if(resp.status === 200){
-            newMessage({sender: 'me', content: message});
+            newMessage({sender: 'me', content: message, connection_id: connection.connection_id});
             setmessage('');
         }else {
             console.error('msg send failed');
@@ -48,7 +48,7 @@ const Chat = (props) => {
                             </Box>
                         )
                     })}
-                    <Box>
+                    <Box margin={{"top":"medium"}}>
                         <TextInput onChange={handleChange} value={message}></TextInput>
                         <Button label="Send" onClick={sendMessage}></Button>
                     </Box>

@@ -91,6 +91,23 @@ apiRouter.get('/connections', async (req,res,next)=>{
     res.json(response);
 });
 
+
+apiRouter.post('/credential/offer', async(req,res,next)=> {
+    console.log('---> creating a credential offer');
+    const token = req.session.token;
+    const cred_defs = await getCredDefs;
+    console.log('--- credential_definitions', cred_defs);
+})
+
+export const getCredDefs = async(token) => {
+    const data = await fetch(`${AGENCY_URL}/credential-definitions/created`, {
+        headers: {
+            'Authorization': `Bearer ${token}`
+        }
+    });
+    return data.json();
+}
+
 export const getConnections = async(token, conn_id=null) => {
     if(conn_id){
         const data = await fetch(`${AGENCY_URL}/connections/${conn_id?conn_id:''}`, {
