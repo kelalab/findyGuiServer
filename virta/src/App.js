@@ -77,12 +77,16 @@ const App = () => {
           break;
         case '/topic/issue_credential/':
           const ex_data = data.data;
-          await fetch('/api/credential/issue', {
-            method: 'POST',
-            body: JSON.stringify({
-              cred_ex_id: ex_data.credential_exchange_id
-            })
-          });
+          if(data.state==='request_received'){
+            await fetch('/api/credential/issue', {
+              method: 'POST',
+              body: JSON.stringify({
+                cred_ex_id: ex_data.credential_exchange_id
+              })
+            });
+          }else{
+            console.log('waiting for cred request');
+          }
           break;
         default:
           console.log('event data', data.data);

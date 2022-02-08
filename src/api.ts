@@ -91,6 +91,20 @@ apiRouter.get('/connections', async (req,res,next)=>{
     res.json(response);
 });
 
+apiRouter.post('/credential/issue', async(req,res,next) => {
+    console.log('---> issuing a credential');
+    const token = req.session.token;
+    const data = req.body;
+    const data_json = JSON.parse(req.body);
+    const cred_ex_id = data_json.cred_ex_id;
+    const issue_resp = await fetch(`${AGENCY_URL}/issue-credential/records/${cred_ex_id}/issue`,{
+        method: 'POST',
+        headers: {
+            'Authorization': `Bearer ${token}`,
+        }
+    });
+    console.log('issue_resp', issue_resp);
+});
 
 apiRouter.post('/credential/offer', async(req,res,next)=> {
     console.log('---> creating a credential offer');
