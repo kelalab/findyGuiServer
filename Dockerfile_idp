@@ -12,8 +12,8 @@ COPY tsconfig.json tsconfig.json
 RUN npm i
 #WORKDIR /src/${FOLDER}
 
-#RUN ls -lha \
-#&& npm run build_user \
+RUN ls -lha \
+&& npm run build_idp \
 #&& cd .. \
 #&& ls -lha
 #WORKDIR /src

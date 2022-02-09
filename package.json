@@ -22,7 +22,7 @@
         "clean": "rm -rf ./bin",
         "build": "tsc",
         "build_endorser": "npm run clean && npm run build && cd virta && npm run build &&  cp -r ./build/ ../bin/virta",
-        "build_user": "npm run build && cp -r ./mika ./bin/mika",
+        "build_idp": "npm run clean && npm run build",
         "start": "npm run build && node bin/index.js",
         "start_endorser": "node bin/virta/index.js",
         "lint": "eslint . --ext .ts"
