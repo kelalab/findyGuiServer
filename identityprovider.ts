@@ -61,9 +61,9 @@ const createWallet = async (wallet_name?:String): Promise<WalletResponse> => {
         const response = await fetch(`${agency_url}/multitenancy/wallet`, {
             method: 'POST',
             body: JSON.stringify({
-                label: 'Opiskelijatietokanta',
+                label: 'IdentityProvider',
                 wallet_dispatch_type: 'default',
-                wallet_key: 'PowahTestiAvain123',
+                wallet_key: 'IdpTestiAvain123',
                 wallet_name: wallet_name,
                 wallet_type: 'indy'
             }),
@@ -260,7 +260,7 @@ const getSchemas = async (token) => {
     
 const main = async(req) => {
     if(!req.session.token){
-        const name = 'Powah';
+        const name = 'Idp';
         const response = await getStatus();
         //console.log('status', response.status);
         const wallet_name = `Testi_${name}_Lompakko`;
@@ -341,12 +341,28 @@ app.use('/webhook', async(req,res,next) => {
     console.log('origURL', req.originalUrl);
     console.log('path', req.path);
     console.log('wallet: ', walletId);
-    events.send('new', {type: req.path, data:req.body});
+    const event = req.body;
+    switch(event.type){
+    case '/topic/basicmessages/': {
+        const eventdata = event.data;
+        console.log(eventdata);
+        break;
+    }
+    case '/topic/issue_credential/': {
+        const eventdata = event.data;
+        console.log(eventdata);
+        break;
+    }
+    default:
+        break;
+    }
     res.status(200).send();
     next();
 });
 
-app.use('/events', async(req,res,next) =>{
+
+/** idp does not need a gui so we need not to send events anywhere */
+/*app.use('/events', async(req,res,next) =>{
     res.set({
         'Cache-Control': 'no-cache',
         'Content-Type': 'text/event-stream',
@@ -358,7 +374,7 @@ app.use('/events', async(req,res,next) =>{
         console.log('SENDING EVENT TO CLIENT', data);
         res.write(`data: ${JSON.stringify(data)} \n\n`)
     });
-});
+});*/
 
 app.get('/', (req, res) => {
     res.sendFile(dirname(fileURLToPath(import.meta.url))+'/virta/index.html');
