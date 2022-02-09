@@ -4,7 +4,7 @@ EXPOSE 4000
 WORKDIR /src
 COPY ${FOLDER} ${FOLDER}
 COPY identityprovider.ts index.ts
-COPY api.ts api.ts
+COPY src src
 COPY constants.ts constants.ts
 COPY websocket.ts websocket.ts
 COPY package.json package.json
