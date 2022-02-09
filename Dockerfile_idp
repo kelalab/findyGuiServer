@@ -13,7 +13,7 @@ RUN npm i
 #WORKDIR /src/${FOLDER}
 
 RUN ls -lha \
-&& npm run build_idp \
+&& npm run build_idp 
 #&& cd .. \
 #&& ls -lha
 #WORKDIR /src
