@@ -4,7 +4,7 @@ import process from 'process';
 import {fileURLToPath} from 'url';
 import {dirname} from 'path';
 import { createServer } from 'http';
-import apiRouter from './src/api.js';
+import apiRouter, { getConnections, sendMessage } from './src/api.js';
 import { Server } from 'socket.io';
 import socket from './websocket.js';
 import fetch from 'node-fetch';
@@ -335,6 +335,7 @@ const events = Events();
 
 app.use('/webhook', async(req,res,next) => {
     console.log('received something', req);
+    const token = req.session.token;
     const walletId = req.get('x-wallet-id');
     console.log('body', req.body);
     //const data = JSON.parse(req.body);
@@ -342,15 +343,19 @@ app.use('/webhook', async(req,res,next) => {
     console.log('path', req.path);
     console.log('wallet: ', walletId);
     const event = req.body;
-    switch(event.type){
+    switch(req.path){
     case '/topic/basicmessages/': {
-        const eventdata = event.data;
-        console.log(eventdata);
+        const {content, connection_id, message_id, state} = event;
+        const connection:any = getConnections(token, connection_id);
+        console.log('connection', connection);
+        sendMessage(connection.their_did, 'Kuinka voin auttaa?', token);
+        console.log(event);
         break;
     }
     case '/topic/issue_credential/': {
-        const eventdata = event.data;
-        console.log(eventdata);
+        const {content, connection_id, message_id, state} = event;
+
+        console.log(event);
         break;
     }
     default:

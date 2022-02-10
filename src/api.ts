@@ -64,13 +64,7 @@ apiRouter.post('/send_message', async (req,res,next) => {
     const message = msg_json.message;
     const token = req.session.token;
     console.log('msg', msg, recipient, message);
-    const response = await fetch(`${AGENCY_URL}/connections/${recipient}/send-message`, {
-        method: 'POST',
-        headers: {
-            'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({content: message})
-    });
+    const response = await sendMessage(recipient, message, token);
     console.log(response);
     if(response.status===200){
         const json = await response.json();
@@ -79,6 +73,17 @@ apiRouter.post('/send_message', async (req,res,next) => {
     }
     res.status(500).send();
 });
+
+export const sendMessage = async(recipient, message, token) => {
+    console.log('--> sending msg', recipient, message);
+    return fetch(`${AGENCY_URL}/connections/${recipient}/send-message`, {
+        method: 'POST',
+        headers: {
+            'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({content: message})
+    });
+}
 
 apiRouter.get('/connections', async (req,res,next)=>{
     console.log('----> fetching connections');
