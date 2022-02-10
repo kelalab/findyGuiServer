@@ -1,5 +1,5 @@
 FROM node:16-slim
-#ARG FOLDER=mika
+ARG FOLDER=idp
 EXPOSE 4000
 WORKDIR /src
 COPY ${FOLDER} ${FOLDER}

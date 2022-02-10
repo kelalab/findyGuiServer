@@ -377,10 +377,10 @@ app.use('/webhook', async(req,res,next) => {
 });*/
 
 app.get('/', (req, res) => {
-    res.sendFile(dirname(fileURLToPath(import.meta.url))+'/virta/index.html');
+    res.sendFile(dirname(fileURLToPath(import.meta.url))+'/idp/index.html');
 })
 console.log('path', dirname(fileURLToPath(import.meta.url)));
-app.use(express.static('bin/virta'));
+//app.use(express.static('bin/virta'));
 
 server.listen(port, () => {
     console.log(`server listening on port ${port}.`);
