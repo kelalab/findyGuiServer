@@ -346,9 +346,9 @@ app.use('/webhook', async(req,res,next) => {
     switch(req.path){
     case '/topic/basicmessages/': {
         const {content, connection_id, message_id, state} = event;
-        const connection:any = getConnections(token, connection_id);
+        const connection:any = await getConnections(token, connection_id);
         console.log('connection', connection);
-        sendMessage(connection.their_did, 'Kuinka voin auttaa?', token);
+        await sendMessage(connection.their_did, 'Kuinka voin auttaa?', token);
         console.log(event);
         break;
     }
