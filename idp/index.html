@@ -1,21 +1,21 @@
 <html>
+
 <body>
-    <h1>Findy käyttäjä</h1>
-    <form action="/accept-invitation" target="hiddenFrame" method="post">
-        <textarea name="invitation" id="invitation" style="height: 100px; width: 400px"></textarea>
-        <input type="submit" value="Hyväksy kutsu"/>
-    </form>
+    <h1>Identiteetintarjoaja</h1>
+    <textarea name="invitation" id="invitation" style="height: 100px; width: 400px"></textarea>
+    <input id="getInvitation" type="submit" value="Luo kutsu" />
     <div id="connection_div">
         <input type="button" id="getconnections_button" value="Get connections" />
         <form>
-        <label for="selected_connection">Choose an active connection:</label>
-        <select id="selected_connection" name="selected_connection" aria-placeholder="Pick one" onchange="select(event)">
-            <option value="Pick one" disabled="true">Pick one</option>
-        </select>
+            <label for="selected_connection">Choose an active connection:</label>
+            <select id="selected_connection" name="selected_connection" aria-placeholder="Pick one"
+                onchange="select(event)">
+                <option value="Pick one" disabled="true">Pick one</option>
+            </select>
         </form>
     </div>
     <form>
-        <input id="msg"/>
+        <input id="msg" />
         <input type="button" id="sendmsg" value="Lähetä viesti" />
     </form>
     <div>
@@ -23,70 +23,63 @@
         <div id="messages" style="display:flex; flex-direction: column;"></div>
     </div>
     <script type="text/javascript">
-            let btn = document.getElementById('sendmsg');
-            let msg = document.getElementById('msg');
- 
-            btn.onclick = async function(evt){
-                console.log('clicked');
-                let connid = document.getElementById('selected_connection');
-                let resp = await fetch('/api/send_message',{
-                    method: 'POST',
-                    body: JSON.stringify({recipient: connid.value, message:msg.value})
-                });
-                //let json_as_text = await resp.text();
+        let btn = document.getElementById('sendmsg');
+        let msg = document.getElementById('msg');
 
-                const sent_msg = document.createElement('span');
-                sent_msg.style="background-color: lightskyblue; padding: 16px; font-weight: bold; border-radius: 8px; margin-top: 8px; margin-left: 48px;";
-                sent_msg.innerHTML = msg.value;
-                document.getElementById('messages').appendChild(sent_msg);
-            }
-            function select(evt){
-                console.log(evt);
-                console.log(evt.target.value);
-            }
-    </script>
-    <script type="text/javascript">
-        async function getConnections() {
-            let resp = await fetch('/api/connections',{
-                method: 'GET',
+        btn.onclick = async function (evt) {
+            console.log('clicked');
+            let connid = document.getElementById('selected_connection');
+            let resp = await fetch('/api/send_message', {
+                method: 'POST',
+                body: JSON.stringify({ recipient: connid.value, message: msg.value })
             });
-            let json = await resp.json();
-            let select = document.getElementById('selected_connection');
-            if(json && json.length>0){
-                // add the newly created element and its content into the DOM
-                const currentDiv = document.getElementById("msg");
-                for(const elem of json){
-                console.log(elem);
-                 // and give it some content
-                const newOption = document.createElement("option");
+            //let json_as_text = await resp.text();
 
-                // add the text node to the newly created div
-                newOption.value=elem.connection_id;
-                newOption.innerHTML=elem.their_label;
-                select.appendChild(newOption);
-            }
-            }
-            
+            const sent_msg = document.createElement('span');
+            sent_msg.style = "background-color: lightskyblue; padding: 16px; font-weight: bold; border-radius: 8px; margin-top: 8px; margin-left: 48px;";
+            sent_msg.innerHTML = msg.value;
+            document.getElementById('messages').appendChild(sent_msg);
         }
-        let cbtn = document.getElementById('getconnections_button');
-        cbtn.onclick = getConnections;
+        function select(evt) {
+            console.log(evt);
+            console.log(evt.target.value);
+        }
     </script>
     <script type="text/javascript">
-        const source = new EventSource('/events');
+        async function getInvitation() {
+            const invitation_response = await fetch('/api/create_invitation');
+            //let json_as_text = await invitation_response.text();
+            const json = await invitation_response.json();
+            //console.log(json_as_text);
+            try {
+                const json_parsed_again = JSON.parse(json);
+                console.log('invitation', json_parsed_again);
+                let textarea = document.getElementById('invitation');
+                textarea.innerText = json_parsed_again;
+            } catch (e) {
+                console.error('unable to parse json');
+            }
+        }
+        let inv_button = document.getElementById('getInvitation');
+        inv_button.onclick = getInvitation;
+    </script>
+    <script type="text/javascript">
+        /*const source = new EventSource('/events');
         source.addEventListener('message', message => {
             console.log('Got', message);
             const msg = document.createElement('span');
-            msg.style="background-color: orange; padding: 16px; font-weight: bold; border-radius: 8px; margin-top: 8px; margin-right: 48px;";
+            msg.style = "background-color: orange; padding: 16px; font-weight: bold; border-radius: 8px; margin-top: 8px; margin-right: 48px;";
             msg.innerHTML = message.data;
-            try{
+            try {
                 let json = JSON.parse(message.data);
                 msg.innerHTML = json.content;
-            }catch(e){
+            } catch (e) {
 
             }
             document.getElementById('messages').appendChild(msg);
-        })
+        })*/
     </script>
     <iframe name="hiddenFrame" width="0" height="0" border="0" style="display: none;"></iframe>
 </body>
+
 </html>
