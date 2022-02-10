@@ -55,7 +55,7 @@
                 const json_parsed_again = JSON.parse(json);
                 console.log('invitation', json_parsed_again);
                 let textarea = document.getElementById('invitation');
-                textarea.innerText = json_parsed_again;
+                textarea.innerText = JSON.stringify(json_parsed_again);
             } catch (e) {
                 console.error('unable to parse json');
             }
