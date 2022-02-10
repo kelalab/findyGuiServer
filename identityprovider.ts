@@ -201,11 +201,11 @@ const getToken = async (id) => {
 const createSchemaAndCredDef = async (token) => {
     console.log('create_schema', token);
     const schema = {
-        schema_name: 'student_db_schema',
+        schema_name: 'identity_schema',
         schema_version: '1.0',
         attributes: [
-            'student_id',
-            'active'
+            'ssn',
+            'name'
         ]   
     }
     const body = JSON.stringify(schema);
@@ -301,7 +301,7 @@ const main = async(req) => {
         if(publicDid.result){
             // do nothing for now
             const schemas:any = await getSchemas(token);
-            if( schemas.schema_ids.length === 0){
+            if( schemas.schema_ids.length === 0 || schemas.schema_ids.filter(sc=>sc.indexOf('identity')!==-1).length === 0){
                 console.log('no schemas?');
                 try{
                     await createSchemaAndCredDef(token);
