@@ -375,7 +375,6 @@ app.use('/webhook', async(req,res,next) => {
         let _machine;
         if(!req.session.machine){
             _machine = Object.create(machine);
-            req.session.machine = _machine;
         }else{
             _machine = req.session.machine;
         }
@@ -388,6 +387,7 @@ app.use('/webhook', async(req,res,next) => {
             await sendMessage(connection_id, 'Kuinka voin auttaa? Olen vain esimerkkitoteutus identiteetintarjoajasta, joten voin tarjota sinulle mock-identiteetin jos vastaat tähän viestiin "1"', token);
             // start listening
             _machine.dispatch('listen');
+            req.session.machine = _machine;
             break;
         case 'LISTEN':
             console.log('listen answer', content);
