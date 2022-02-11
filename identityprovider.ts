@@ -361,6 +361,7 @@ const events = Events();
 app.use('/webhook', async(req,res,next) => {
     console.log('received something');
     console.log('session', req.session);
+    console.log('sessionid', req.session.id);
     const token = req.session.token;
     const walletId = req.get('x-wallet-id');
     console.log('body', req.body);
