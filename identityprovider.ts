@@ -4,7 +4,7 @@ import process from 'process';
 import {fileURLToPath} from 'url';
 import {dirname} from 'path';
 import { createServer } from 'http';
-import apiRouter, { createCredOffer, getConnections, sendMessage } from './src/api.js';
+import apiRouter, { createCredOffer, getConnections, getSchemas, sendMessage } from './src/api.js';
 import { Server } from 'socket.io';
 import socket from './websocket.js';
 import fetch from 'node-fetch';
@@ -272,23 +272,7 @@ const createSchemaAndCredDef = async (token) => {
     console.log('creddef', cred_json);
 }
 
-const getSchemas = async (token) => {
-    const resp = await fetch(`${agency_url}/schemas/created`, {
-        method: 'GET',
-        headers: {
-            'Authorization': `Bearer ${token}`
-        }
-    });
-    console.log(resp);
-    try{
-        const json = await resp.json();
-        console.log('schemasjson', json);
-        return json;
-    }catch(error){
-        console.error('not json')
-        return [];
-    }
-}
+
     
 const main = async(req) => {
     if(!req.session.token){

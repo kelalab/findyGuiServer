@@ -155,6 +155,8 @@ export const createCredOffer = async(connection_id, attributes, token) =>{
     //check definitions 
     for(const id of cred_defs.credential_definition_ids){
         const cred_def = await getCredDefs(token, id);
+        const schema:any = await getSchemas(token, id);
+        console.log('schema', schema);
         console.log('cred_def', cred_def);
         console.log('cd value', cred_def.credential_definition.value.primary);
     }
@@ -205,6 +207,41 @@ export const getCredDefs = async(token:string, id?:string):Promise<Cred_def_resp
         }
     });
     return data.json();
+}
+
+export const getSchemas = async (token, id?) => {
+    if(id){
+        const resp = await fetch(`${AGENCY_URL}/schemas/${id}`, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+        console.log(resp);
+        try{
+            const json = await resp.json();
+            console.log('schemasjson', json);
+            return json;
+        }catch(error){
+            console.error('not json')
+            return [];
+        }
+    }
+    const resp = await fetch(`${AGENCY_URL}/schemas/created`, {
+        method: 'GET',
+        headers: {
+            'Authorization': `Bearer ${token}`
+        }
+    });
+    console.log(resp);
+    try{
+        const json = await resp.json();
+        console.log('schemasjson', json);
+        return json;
+    }catch(error){
+        console.error('not json')
+        return [];
+    }
 }
 
 export const getConnections = async(token, conn_id=null) => {
