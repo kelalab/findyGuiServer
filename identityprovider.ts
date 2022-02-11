@@ -4,7 +4,7 @@ import process from 'process';
 import {fileURLToPath} from 'url';
 import {dirname} from 'path';
 import { createServer } from 'http';
-import apiRouter, { getConnections, sendMessage } from './src/api.js';
+import apiRouter, { createCredOffer, getConnections, sendMessage } from './src/api.js';
 import { Server } from 'socket.io';
 import socket from './websocket.js';
 import fetch from 'node-fetch';
@@ -395,16 +395,32 @@ app.use('/webhook', async(req,res,next) => {
         case 'LISTEN':
             console.log('listen answer', content);
             if(content === '1'){
-
+                await createCredOffer(connection_id, token);
+                _machine.dispatch('issue');
+                machines.set(connection_id,_machine);
             }
+            break;
+        case 'ISSUE':
+            
             break;
         }
         console.log(_machine);
         break;
+        
     }
     case '/topic/issue_credential/': {
         const {content, connection_id, message_id, state} = event;
-
+        let _machine;
+        if(!machines.get(connection_id)){
+            _machine = Object.create(machine);
+        }else{
+            _machine = machines.get(connection_id);
+        }
+        switch(_machine.state){
+        case 'ISSUE':
+            console.log('issue credential stuff');
+            break;
+        }
         console.log(event);
         break;
     }

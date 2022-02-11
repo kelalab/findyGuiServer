@@ -125,19 +125,25 @@ apiRouter.post('/credential/offer', async(req,res,next)=> {
     const token = req.session.token;
     const data = req.body;
     const data_json = JSON.parse(req.body);
-    const connnection_id = data_json.connection;
+    const connection_id = data_json.connection;
+    const send_offer_resp = await createCredOffer(connection_id, token);
+    console.log(send_offer_resp);
+    res.status(200).send();
+});
+
+export const createCredOffer = async(connection_id, token) =>{
     const cred_defs:any = await getCredDefs(token);
     console.log('--- credential_definitions', cred_defs);
     // 
     const cred_def_id = cred_defs.credential_definition_ids[0];
-    const send_offer_resp = await fetch(`${AGENCY_URL}/issue-credential/send-offer`, {
+    return fetch(`${AGENCY_URL}/issue-credential/send-offer`, {
         method: 'POST',
         headers: {
             'Authorization': `Bearer ${token}`,
             'Content-type': 'application/json'
         },
         body: JSON.stringify({
-            connection_id: connnection_id,
+            connection_id: connection_id,
             cred_def_id: cred_def_id,
             credential_preview: {
                 '@type': 'issue-credentials/1.0/credential_preview',
@@ -156,9 +162,7 @@ apiRouter.post('/credential/offer', async(req,res,next)=> {
             }
         })
     });
-    console.log(send_offer_resp);
-    res.status(200).send();
-})
+}
 
 interface Cred_def_resp{
     credential_definition_ids?: []
