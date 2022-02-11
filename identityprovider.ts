@@ -372,10 +372,14 @@ app.use('/webhook', async(req,res,next) => {
     switch(req.path){
     case '/topic/basicmessages/': {
         const {content, connection_id, message_id, state} = event;
+        let _machine;
         if(!req.session.machine){
-            req.session.machine = Object.create(machine);
+            _machine = Object.create(machine);
+            req.session.machine = _machine;
+        }else{
+            _machine = req.session.machine;
         }
-        const _machine = req.session.machine;
+        
         // needs a finite state machine here
         console.log('mac state', _machine.state);
         console.log('content', content);
