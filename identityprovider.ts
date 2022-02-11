@@ -376,10 +376,11 @@ app.use('/webhook', async(req,res,next) => {
         }
         const _machine = req.session.machine;
         // needs a finite state machine here
+        console.log('mac state', _machine.state);
+        console.log('content', content);
         switch(_machine.state){
         case 'IDLE':
-            await sendMessage(connection_id, 'Kuinka voin auttaa?', token);
-            await sendMessage(connection_id, 'Olen vain esimerkkitoteutus identiteetintarjoajasta, joten voin tarjota sinulle mock-identiteetin jos vastaat tähän viestiin "1"', token);
+            await sendMessage(connection_id, 'Kuinka voin auttaa? Olen vain esimerkkitoteutus identiteetintarjoajasta, joten voin tarjota sinulle mock-identiteetin jos vastaat tähän viestiin "1"', token);
             // start listening
             _machine.dispatch('listen');
             break;
