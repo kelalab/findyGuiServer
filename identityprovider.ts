@@ -401,7 +401,18 @@ app.use('/webhook', async(req,res,next) => {
             console.log('listen answer', content);
             if(content === '1'){
                 console.log('offering');
-                await createCredOffer(connection_id, token);
+                await createCredOffer(connection_id,[
+                    {
+                        'mime-type': 'text/plain',
+                        'name': 'name',
+                        'value': 'Alice A'  
+                    },
+                    {
+                        'mime-type': 'text/plain',
+                        'name': 'ssn',
+                        'value': '012345-789B'
+                    }
+                ] , token);
                 _machine.dispatch('issue');
                 machines.set(connection_id,_machine);
             }
@@ -415,7 +426,7 @@ app.use('/webhook', async(req,res,next) => {
         
     }
     case '/topic/issue_credential/': {
-        const {content, connection_id, message_id, state} = event;
+        const {content, connection_id, message_id, state, credential_exchange_id} = event;
         let _machine;
         if(!machines.get(connection_id)){
             _machine = Object.create(machine);
@@ -425,6 +436,16 @@ app.use('/webhook', async(req,res,next) => {
         switch(_machine.state){
         case 'ISSUE':
             console.log('issue credential stuff');
+            if(state==='request_received'){
+                await fetch('/api/credential/issue', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        cred_ex_id: credential_exchange_id
+                    })
+                });
+            }else{
+                console.log('waiting for cred request');
+            }
             break;
         }
         console.log(event);

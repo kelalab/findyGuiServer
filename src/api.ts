@@ -126,12 +126,30 @@ apiRouter.post('/credential/offer', async(req,res,next)=> {
     const data = req.body;
     const data_json = JSON.parse(req.body);
     const connection_id = data_json.connection;
-    const send_offer_resp = await createCredOffer(connection_id, token);
+    const send_offer_resp = await createCredOffer(connection_id,[
+        {
+            'mime-type': 'text/plain',
+            'name': 'student_id',
+            'value': 'alice_id'
+        },
+        {
+            'mime-type': 'text/plain',
+            'name': 'active',
+            'value': 'true'
+        }
+    ] , token);
     console.log(send_offer_resp);
     res.status(200).send();
 });
 
-export const createCredOffer = async(connection_id, token) =>{
+/**
+ * 
+ * @param connection_id 
+ * @param attributes array of attributes in the form of {'mime-type':x, 'name':y, 'value':z}
+ * @param token 
+ * @returns 
+ */
+export const createCredOffer = async(connection_id, attributes, token) =>{
     const cred_defs:any = await getCredDefs(token);
     console.log('--- credential_definitions', cred_defs);
     // 
@@ -147,18 +165,7 @@ export const createCredOffer = async(connection_id, token) =>{
             cred_def_id: cred_def_id,
             credential_preview: {
                 '@type': 'issue-credentials/1.0/credential_preview',
-                'attributes': [
-                    {
-                        'mime-type': 'text/plain',
-                        'name': 'student_id',
-                        'value': 'alice_id'
-                    },
-                    {
-                        'mime-type': 'text/plain',
-                        'name': 'active',
-                        'value': 'true'
-                    }
-                ] 
+                'attributes': attributes
             }
         })
     });
