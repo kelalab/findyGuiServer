@@ -55,7 +55,9 @@ const machine = {
             }
         },
         ISSUE: {
-
+            cancel() {
+                this.state = 'IDLE'
+            }
         }
     },
     dispatch(actionName){
@@ -402,7 +404,7 @@ app.use('/webhook', async(req,res,next) => {
             }
             break;
         case 'ISSUE':
-            
+            _machine.dispatch('cancel');
             break;
         }
         console.log(_machine);
