@@ -397,7 +397,7 @@ app.use('/webhook', async(req,res,next) => {
             _machine.dispatch('listen');
             machines.set(connection_id,_machine);
             break;
-        case 'LISTEN':
+        case 'LISTENING':
             console.log('listen answer', content);
             if(content === 1){
                 await createCredOffer(connection_id, token);
