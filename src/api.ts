@@ -155,7 +155,7 @@ export const createCredOffer = async(connection_id, attributes, token) =>{
     //check definitions 
     for(const id of cred_defs.credential_definition_ids){
         const cred_def = await getCredDefs(token, id);
-        const schema:any = await getSchemas(token, id);
+        const schema:any = await getSchemas(token, cred_def.credential_definition.schemaId);
         console.log('schema', schema);
         console.log('cred_def', cred_def);
         console.log('cd value', cred_def.credential_definition.value.primary);
@@ -183,7 +183,7 @@ interface Cred_def_resp{
     credential_definition?:{ 
         ver:string,
         id:string,
-        schemaid:string,
+        schemaId:string,
         type:string,
         tag:string,
         value: {
