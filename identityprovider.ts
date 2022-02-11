@@ -359,7 +359,8 @@ app.use('/api', apiRouter);
 const events = Events();
 
 app.use('/webhook', async(req,res,next) => {
-    console.log('received something', req);
+    console.log('received something');
+    console.log('session', req.session);
     const token = req.session.token;
     const walletId = req.get('x-wallet-id');
     console.log('body', req.body);
@@ -392,7 +393,7 @@ app.use('/webhook', async(req,res,next) => {
             
             break;
         }
-        console.log(event);
+        console.log(_machine);
         req.session.save();
         break;
     }
