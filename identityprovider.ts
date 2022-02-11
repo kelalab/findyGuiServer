@@ -398,7 +398,7 @@ app.use('/webhook', async(req,res,next) => {
                         'name': 'ssn',
                         'value': '012345-789B'
                     }
-                ] , token);
+                ] , 'identity_schema' , token);
                 _machine.dispatch('issue');
                 machines.set(connection_id,_machine);
             }
