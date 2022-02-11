@@ -137,7 +137,7 @@ apiRouter.post('/credential/offer', async(req,res,next)=> {
             'name': 'active',
             'value': 'true'
         }
-    ] , token);
+    ] , 'student_db_schema', token);
     console.log(send_offer_resp);
     res.status(200).send();
 });
