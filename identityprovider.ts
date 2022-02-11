@@ -38,6 +38,31 @@ const port_env = process.env.PORT;
 
 console.log('agency url',AGENCY_URL);
 
+const machine = {
+    state: 'IDLE',
+    transitions: {
+        IDLE: {
+            listen() {
+                this.state = 'LISTENING'
+            }
+        },
+        LISTENING: {
+
+        },
+        ISSUE: {
+
+        }
+    },
+    dispatch(actionName){
+        const action = this.transitions[this.state][actionName];
+        if (action) {
+            action.call(this);
+        } else {
+            console.log('invalid action');
+        }
+    }
+}
+
 const von_web_arg = args.find(arg => arg.split('=')[0].toLowerCase()==='von_webserver_url');
 const von_web_env = process.env.VON_WEBSERVER_URL;
 let von_web_arg_val;
@@ -346,10 +371,28 @@ app.use('/webhook', async(req,res,next) => {
     switch(req.path){
     case '/topic/basicmessages/': {
         const {content, connection_id, message_id, state} = event;
-        //const connection:any = await getConnections(token, connection_id);
-        //console.log('connection', connection);
-        await sendMessage(connection_id, 'Kuinka voin auttaa?', token);
+        if(!req.session.machine){
+            req.session.machine = Object.create(machine);
+        }
+        const _machine = req.session.machine;
+        // needs a finite state machine here
+        switch(_machine.state){
+        case 'IDLE':
+            await sendMessage(connection_id, 'Kuinka voin auttaa?', token);
+            await sendMessage(connection_id, 'Olen vain esimerkkitoteutus identiteetintarjoajasta, joten voin tarjota sinulle mock-identiteetin jos vastaat tähän viestiin "1"', token);
+            // start listening
+            _machine.dispatch('listen');
+            break;
+        case 'LISTEN':
+            console.log('listen answer', content);
+            if(content === '1'){
+
+            }
+            
+            break;
+        }
         console.log(event);
+        req.session.save();
         break;
     }
     case '/topic/issue_credential/': {

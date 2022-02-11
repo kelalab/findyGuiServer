@@ -73,7 +73,13 @@ apiRouter.post('/send_message', async (req,res,next) => {
     }
     res.status(500).send();
 });
-
+/**
+ * 
+ * @param recipient connection_id of the connection where msg is sent
+ * @param message string message
+ * @param token authorization token for the wallet
+ * @returns 
+ */
 export const sendMessage = async(recipient, message, token) => {
     console.log('--> sending msg', recipient, message);
     return fetch(`${AGENCY_URL}/connections/${recipient}/send-message`, {
