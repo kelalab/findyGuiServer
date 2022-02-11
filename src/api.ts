@@ -146,21 +146,28 @@ apiRouter.post('/credential/offer', async(req,res,next)=> {
  * 
  * @param connection_id 
  * @param attributes array of attributes in the form of {'mime-type':x, 'name':y, 'value':z}
+ * @param name schema_name of the credential to issue
  * @param token 
  * @returns 
  */
-export const createCredOffer = async(connection_id, attributes, token) =>{
+export const createCredOffer = async(connection_id, attributes, name, token) =>{
     const cred_defs:any = await getCredDefs(token);
     console.log('--- credential_definitions', cred_defs);
     //check definitions 
+    let idx = 0;
     for(const id of cred_defs.credential_definition_ids){
         const cred_def = await getCredDefs(token, id);
         const schema:any = await getSchemas(token, cred_def.credential_definition.schemaId);
         console.log('schema', schema);
         console.log('cred_def', cred_def);
         console.log('cd value', cred_def.credential_definition.value.primary);
+        if(schema.name === name){
+            break;
+        }
+        
+        idx++;
     }
-    const cred_def_id = cred_defs.credential_definition_ids[0];
+    const cred_def_id = cred_defs.credential_definition_ids[idx];
     return fetch(`${AGENCY_URL}/issue-credential/send-offer`, {
         method: 'POST',
         headers: {
@@ -217,10 +224,9 @@ export const getSchemas = async (token, id?) => {
                 'Authorization': `Bearer ${token}`
             }
         });
-        console.log(resp);
         try{
             const json = await resp.json();
-            console.log('schemasjson', json);
+            //console.log('schemasjson', json);
             return json;
         }catch(error){
             console.error('not json')
