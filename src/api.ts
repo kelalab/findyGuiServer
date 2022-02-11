@@ -156,6 +156,7 @@ export const createCredOffer = async(connection_id, attributes, token) =>{
     for(const id of cred_defs.credential_definition_ids){
         const cred_def = await getCredDefs(token, id);
         console.log('cred_def', cred_def);
+        console.log('cd value', cred_def.value.primary);
     }
     const cred_def_id = cred_defs.credential_definition_ids[0];
     return fetch(`${AGENCY_URL}/issue-credential/send-offer`, {
@@ -177,6 +178,14 @@ export const createCredOffer = async(connection_id, attributes, token) =>{
 
 interface Cred_def_resp{
     credential_definition_ids?: []
+    ver?:string,
+    id?:string,
+    schemaid?:string,
+    type?:string,
+    tag?:string,
+    value?: {
+        primary?: any
+    }
 }
 
 export const getCredDefs = async(token:string, id?:string):Promise<Cred_def_resp> => {
