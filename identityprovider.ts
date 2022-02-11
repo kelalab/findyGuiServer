@@ -405,6 +405,7 @@ app.use('/webhook', async(req,res,next) => {
             break;
         case 'ISSUE':
             _machine.dispatch('cancel');
+            machines.set(connection_id, _machine);
             break;
         }
         console.log(_machine);
