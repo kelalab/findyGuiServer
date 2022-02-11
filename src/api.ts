@@ -168,6 +168,8 @@ export const createCredOffer = async(connection_id, attributes, name, token) =>{
         idx++;
     }
     const cred_def_id = cred_defs.credential_definition_ids[idx];
+    console.log('idx', idx);
+    console.log('id', cred_def_id);
     return fetch(`${AGENCY_URL}/issue-credential/send-offer`, {
         method: 'POST',
         headers: {
