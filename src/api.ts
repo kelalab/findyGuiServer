@@ -152,7 +152,11 @@ apiRouter.post('/credential/offer', async(req,res,next)=> {
 export const createCredOffer = async(connection_id, attributes, token) =>{
     const cred_defs:any = await getCredDefs(token);
     console.log('--- credential_definitions', cred_defs);
-    // 
+    //check definitions 
+    for(const id of cred_defs.credential_definition_ids){
+        const cred_def = await getCredDefs(token, id);
+        console.log('cred_def', cred_def);
+    }
     const cred_def_id = cred_defs.credential_definition_ids[0];
     return fetch(`${AGENCY_URL}/issue-credential/send-offer`, {
         method: 'POST',
@@ -175,7 +179,15 @@ interface Cred_def_resp{
     credential_definition_ids?: []
 }
 
-export const getCredDefs = async(token):Promise<Cred_def_resp> => {
+export const getCredDefs = async(token:string, id?:string):Promise<Cred_def_resp> => {
+    if(id){
+        const data = await fetch(`${AGENCY_URL}/credential-definitions/${id}`, {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+        return data.json();
+    }
     const data = await fetch(`${AGENCY_URL}/credential-definitions/created`, {
         headers: {
             'Authorization': `Bearer ${token}`
