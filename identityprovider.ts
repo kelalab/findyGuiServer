@@ -47,7 +47,12 @@ const machine = {
             }
         },
         LISTENING: {
-
+            issue() {
+                this.state = 'ISSUE'
+            },
+            cancel() {
+                this.state = 'IDLE'
+            }
         },
         ISSUE: {
 
