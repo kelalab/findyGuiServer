@@ -394,11 +394,9 @@ app.use('/webhook', async(req,res,next) => {
             if(content === '1'){
 
             }
-            
             break;
         }
         console.log(_machine);
-        req.session.save();
         break;
     }
     case '/topic/issue_credential/': {
@@ -410,6 +408,8 @@ app.use('/webhook', async(req,res,next) => {
     default:
         break;
     }
+    req.session.save();
+    console.log(req.session);
     res.status(200).send();
     next();
 });
