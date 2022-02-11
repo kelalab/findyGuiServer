@@ -81,6 +81,8 @@ console.log(port);
 const agency_url = AGENCY_URL;
 const register_url = von_web_arg_val || agency_url.replace(':8080', '');
 
+const machines = new Map<string, any>();
+
 const createWallet = async (wallet_name?:String): Promise<WalletResponse> => {
     try {
         const response = await fetch(`${agency_url}/multitenancy/wallet`, {
@@ -374,10 +376,10 @@ app.use('/webhook', async(req,res,next) => {
     case '/topic/basicmessages/': {
         const {content, connection_id, message_id, state} = event;
         let _machine;
-        if(!req.session.machine){
+        if(!machines.get(connection_id)){
             _machine = Object.create(machine);
         }else{
-            _machine = req.session.machine;
+            _machine = machines.get(connection_id);
         }
         
         // needs a finite state machine here
@@ -388,7 +390,7 @@ app.use('/webhook', async(req,res,next) => {
             await sendMessage(connection_id, 'Kuinka voin auttaa? Olen vain esimerkkitoteutus identiteetintarjoajasta, joten voin tarjota sinulle mock-identiteetin jos vastaat tähän viestiin "1"', token);
             // start listening
             _machine.dispatch('listen');
-            req.session.machine = _machine;
+            machines.set(connection_id,_machine);
             break;
         case 'LISTEN':
             console.log('listen answer', content);
