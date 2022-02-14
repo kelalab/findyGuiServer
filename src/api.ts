@@ -161,7 +161,7 @@ export const createCredOffer = async(connection_id, attributes, name, token) =>{
         console.log('schema', schema);
         console.log('cred_def', cred_def);
         console.log('cd value', cred_def.credential_definition.value.primary);
-        if(schema.schema.name === name){
+        if(schema.name === name){
             break;
         }
         
@@ -227,9 +227,9 @@ export const getSchemas = async (token, id?) => {
             }
         });
         try{
-            const json = await resp.json();
+            const json:any = await resp.json();
             //console.log('schemasjson', json);
-            return json;
+            return json.schema;
         }catch(error){
             console.error('not json')
             return [];
