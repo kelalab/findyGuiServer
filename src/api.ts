@@ -161,7 +161,7 @@ export const createCredOffer = async(connection_id, attributes, name, token) =>{
         console.log('schema', schema);
         console.log('cred_def', cred_def);
         console.log('cd value', cred_def.credential_definition.value.primary);
-        if(schema.name === name){
+        if(schema.schema.name === name){
             break;
         }
         
