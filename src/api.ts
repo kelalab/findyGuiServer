@@ -108,7 +108,12 @@ apiRouter.post('/credential/issue', async(req,res,next) => {
     const data = req.body;
     const data_json = JSON.parse(req.body);
     const cred_ex_id = data_json.cred_ex_id;
-    const issue_resp = await fetch(`${AGENCY_URL}/issue-credential/records/${cred_ex_id}/issue`,{
+    const issue_resp = await issue(cred_ex_id, token);
+    console.log('issue_resp', issue_resp);
+});
+
+export const issue = async(cred_ex_id, token) => {
+    return fetch(`${AGENCY_URL}/issue-credential/records/${cred_ex_id}/issue`,{
         method: 'POST',
         headers: {
             'Authorization': `Bearer ${token}`,
@@ -117,8 +122,7 @@ apiRouter.post('/credential/issue', async(req,res,next) => {
             comment: 'powah issued'
         })
     });
-    console.log('issue_resp', issue_resp);
-});
+}
 
 apiRouter.post('/credential/offer', async(req,res,next)=> {
     console.log('---> creating a credential offer');

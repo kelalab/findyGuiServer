@@ -4,7 +4,7 @@ import process from 'process';
 import {fileURLToPath} from 'url';
 import {dirname} from 'path';
 import { createServer } from 'http';
-import apiRouter, { createCredOffer, getConnections, getSchemas, sendMessage } from './src/api.js';
+import apiRouter, { createCredOffer, getConnections, getSchemas, issue, sendMessage } from './src/api.js';
 import { Server } from 'socket.io';
 import socket from './websocket.js';
 import fetch from 'node-fetch';
@@ -424,12 +424,7 @@ app.use('/webhook', async(req,res,next) => {
         case 'ISSUE':
             console.log('issue credential stuff');
             if(state==='request_received'){
-                await fetch('/api/credential/issue', {
-                    method: 'POST',
-                    body: JSON.stringify({
-                        cred_ex_id: credential_exchange_id
-                    })
-                });
+                await issue(credential_exchange_id, token);
             }else{
                 console.log('waiting for cred request');
             }
