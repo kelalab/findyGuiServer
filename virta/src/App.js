@@ -39,6 +39,16 @@ const App = () => {
     setMessages(msgs);
   }
 
+  const newMessages = (...msg) => {
+    console.log('newMessage', msg, messages);
+    let msgs = [...messages];
+    console.log('msgs', msgs);
+    msg.forEach(m => {
+      msgs.push(m);
+    })
+    setMessages(msgs);
+  }
+
   useEffect(() => {
     const sse = new EventSource('/events',
       { withCredentials: true });
@@ -54,8 +64,6 @@ const App = () => {
           const connid = msgdata.connection_id;
           const connection = connections.find(conn => conn.connection_id === connid);
           if(connection){
-            newMessage({sender:connection.their_label,content:msgdata.content,connection_id: connection.connection_id});
-            //
             const intro_msg = 'Hei, kuinka voin auttaa?';
             const resp = await fetch('/api/send_message', {
               method: 'POST',
@@ -64,7 +72,7 @@ const App = () => {
                   recipient: connection.connection_id
               })
             });
-            newMessage({sender:'me',content:intro_msg,connection_id: connection.connection_id});
+            newMessages({sender:connection.their_label,content:msgdata.content,connection_id: connection.connection_id},{sender:'me',content:intro_msg,connection_id: connection.connection_id});
             await fetch('/api/credential/offer', {
               method: 'POST',
               body: JSON.stringify({
@@ -102,7 +110,7 @@ const App = () => {
     return () => {
       sse.close();
     };
-  }, []);
+  }, [messages, connections]);
 
 return (
   <Grommet full theme={theme}>
