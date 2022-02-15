@@ -105,7 +105,6 @@ apiRouter.get('/connections', async (req,res,next)=>{
 apiRouter.post('/credential/issue', async(req,res,next) => {
     console.log('---> issuing a credential');
     const token = req.session.token;
-    const data = req.body;
     const data_json = JSON.parse(req.body);
     const cred_ex_id = data_json.cred_ex_id;
     const issue_resp = await issue(cred_ex_id, token);
@@ -127,7 +126,6 @@ export const issue = async(cred_ex_id, token) => {
 apiRouter.post('/credential/offer', async(req,res,next)=> {
     console.log('---> creating a credential offer');
     const token = req.session.token;
-    const data = req.body;
     const data_json = JSON.parse(req.body);
     const connection_id = data_json.connection;
     const send_offer_resp = await createCredOffer(connection_id,[
@@ -150,22 +148,22 @@ apiRouter.post('/credential/offer', async(req,res,next)=> {
  * 
  * @param connection_id 
  * @param attributes array of attributes in the form of {'mime-type':x, 'name':y, 'value':z}
- * @param name schema_name of the credential to issue
+ * @param schema_name schema_name of the credential to issue
  * @param token 
  * @returns 
  */
-export const createCredOffer = async(connection_id, attributes, name, token) =>{
+export const createCredOffer = async(connection_id, attributes, schema_name, token) =>{
     const cred_defs:any = await getCredDefs(token);
     console.log('--- credential_definitions', cred_defs);
-    //check definitions 
+    //check definitions to find the one to be used
     let idx = 0;
     for(const id of cred_defs.credential_definition_ids){
         const cred_def = await getCredDefs(token, id);
         const schema:any = await getSchemas(token, cred_def.credential_definition.schemaId);
         console.log('schema', schema);
         console.log('cred_def', cred_def);
-        console.log('cd value', cred_def.credential_definition.value.primary);
-        if(schema.name === name){
+        // if schema name used by cred_def equals provided, we can break off the loop
+        if(schema.name === schema_name){
             break;
         }
         
@@ -256,6 +254,12 @@ export const getSchemas = async (token, id?) => {
     }
 }
 
+/**
+ * 
+ * @param token 
+ * @param conn_id 
+ * @returns 
+ */
 export const getConnections = async(token, conn_id=null) => {
     if(conn_id){
         const data = await fetch(`${AGENCY_URL}/connections/${conn_id?conn_id:''}`, {

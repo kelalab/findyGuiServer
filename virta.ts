@@ -259,29 +259,50 @@ const getSchemas = async (token) => {
 }
     
 const main = async(req) => {
+    const name = 'Virta';
+    const wallet_name = `Testi_${name}_Lompakko`;
+    let existing_wallet;
+    /** check for wallet in req session */
+    if(!req.session.wallet){
+        console.log('set wallet in session');
+        existing_wallet = (await getWallets(wallet_name)).results[0];
+        req.session.wallet = existing_wallet;
+    }else{
+        console.log('get wallet in session');
+        existing_wallet = req.session.wallet;
+    }
+    /** check for wallet info in req session */
+    let all_wallet_info;
+    if(!req.session.wallet_info){
+        console.log('set wallet info in session');
+        all_wallet_info = await getWallet(existing_wallet.wallet_id);
+        req.session.wallet_info = all_wallet_info;
+    }else{
+        console.log('get wallet info in session');
+        all_wallet_info = req.session.wallet_info;
+    }
+
+    const webhook_urls:string[] = all_wallet_info.settings['wallet.webhook_urls'];
+    console.log('wallet_webhooks, no update', webhook_urls);
+    if(webhook_urls.length === 0 || webhook_urls.indexOf(`${webhook_env}`) === -1){
+        updateWallet(existing_wallet.wallet_id);
+        const webhook_urls = all_wallet_info.settings['wallet.webhook_urls'];
+        console.log('wallet_webhooks after update', webhook_urls);
+    }
+
+    /** rest of init logic */
     if(!req.session.token){
-        const name = 'Powah';
         const response = await getStatus();
         //console.log('status', response.status);
-        const wallet_name = `Testi_${name}_Lompakko`;
         if(response.status === 200){
             console.log('connection ok');
         }
-        const existing_wallet = (await getWallets(wallet_name)).results[0];
         let token;
         let walletid;
         if(existing_wallet){
             const all_wallet_info = await getWallet(existing_wallet.wallet_id);
             walletid = existing_wallet.wallet_id;
             const wallet_id = existing_wallet.wallet_id;
-            //console.log('existing wallet', wallet_id);
-            const webhook_urls:string[] = all_wallet_info.settings['wallet.webhook_urls'];
-            console.log('wallet_webhook', webhook_urls);
-            if(webhook_urls.length === 0 || webhook_urls.indexOf(`${webhook_env}`) === -1){
-                updateWallet(existing_wallet.wallet_id);
-                const webhook_urls = all_wallet_info.settings['wallet.webhook_urls'];
-                console.log('wallet_webhook', webhook_urls);
-            }
             token = await getToken(wallet_id);
         }else{
             const new_wallet = await createWallet(wallet_name);

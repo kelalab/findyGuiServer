@@ -57,6 +57,9 @@ const machine = {
         ISSUE: {
             cancel() {
                 this.state = 'IDLE'
+            },
+            done() {
+                this.state = 'IDLE'
             }
         }
     },
@@ -401,6 +404,11 @@ app.use('/webhook', async(req,res,next) => {
                 ] , 'identity_schema' , token);
                 _machine.dispatch('issue');
                 machines.set(connection_id,_machine);
+            }else{
+                console.log('input not one');
+                await sendMessage(connection_id, 'Kiitos. Palataan asiaan kun tarvitset todisteen identiteetistä.', token);
+                _machine.dispatch('issue');
+                machines.set(connection_id,_machine);
             }
             break;
         case 'ISSUE':
@@ -425,6 +433,8 @@ app.use('/webhook', async(req,res,next) => {
             console.log('issue credential stuff');
             if(state==='request_received'){
                 await issue(credential_exchange_id, token);
+                _machine.dispatch('done');
+                machines.set(connection_id,_machine);
             }else{
                 console.log('waiting for cred request');
             }
