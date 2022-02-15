@@ -4,7 +4,7 @@ import process from 'process';
 import {fileURLToPath} from 'url';
 import {dirname} from 'path';
 import { createServer } from 'http';
-import apiRouter from './src/api.js';
+import apiRouter, { createCredOffer, issue, sendMessage, sendProofRequest } from './src/api.js';
 import { Server } from 'socket.io';
 import socket from './websocket.js';
 import fetch from 'node-fetch';
@@ -53,8 +53,52 @@ const port = determinePort(port_env,port_arg_value,'4000');
 let unusedport = port;
 console.log(port);
 
+const machine = {
+    state: 'IDLE',
+    transitions: {
+        IDLE: {
+            listen() {
+                this.state = 'LISTENING'
+            }
+        },
+        LISTENING: {
+            getProof() {
+                this.state = 'REQUEST_PROOF'
+            },
+            cancel() {
+                this.state = 'IDLE'
+            }
+        },
+        REQUEST_PROOF: {
+            ok() {
+               this.state = 'ISSUE'
+            },
+            fail(){
+                this.state = 'IDLE'
+            }
+        },
+        ISSUE: {
+            cancel() {
+                this.state = 'IDLE'
+            },
+            done() {
+                this.state = 'IDLE'
+            }
+        }
+    },
+    dispatch(actionName){
+        const action = this.transitions[this.state][actionName];
+        if (action) {
+            action.call(this);
+        } else {
+            console.log('invalid action');
+        }
+    }
+}
+
 const agency_url = AGENCY_URL;
 const register_url = von_web_arg_val || agency_url.replace(':8080', '');
+const machines = new Map<string, any>();
 
 const createWallet = async (wallet_name?:String): Promise<WalletResponse> => {
     try {
@@ -355,14 +399,103 @@ app.use('/api', apiRouter);
 
 const events = Events();
 
+const stateLoop = async(event, path, token) => {
+    switch(path){
+    case '/topic/basicmessages/': {
+        const {content, connection_id, message_id, state} = event;
+        let _machine;
+        if(!machines.get(connection_id)){
+            _machine = Object.create(machine);
+        }else{
+            _machine = machines.get(connection_id);
+        }
+        
+        // needs a finite state machine here
+        console.log('mac state', _machine.state);
+        console.log('content', content);
+        switch(_machine.state){
+        case 'IDLE':
+            await sendMessage(connection_id, 'Kuinka voin auttaa? Olen vain esimerkkitoteutus identiteetintarjoajasta, joten voin tarjota sinulle mock-identiteetin jos vastaat tähän viestiin "1"', token);
+            // start listening
+            _machine.dispatch('listen');
+            machines.set(connection_id,_machine);
+            break;
+        case 'LISTENING':
+            console.log('listen answer', content);
+            if(content === '1'){
+                console.log('offering');
+                await createCredOffer(connection_id,[
+                    {
+                        'mime-type': 'text/plain',
+                        'name': 'name',
+                        'value': 'Alice A'  
+                    },
+                    {
+                        'mime-type': 'text/plain',
+                        'name': 'ssn',
+                        'value': '012345-789B'
+                    }
+                ] , 'identity_schema' , token);
+                _machine.dispatch('getProof');
+                machines.set(connection_id,_machine);
+            }else{
+                console.log('input not one');
+                await sendMessage(connection_id, 'Kiitos. Palataan asiaan kun tarvitset todisteen identiteetistä.', token);
+                _machine.dispatch('issue');
+                machines.set(connection_id,_machine);
+            }
+            break;
+        case 'REQUEST_PROOF':
+            console.log('requesting proof');
+            await sendProofRequest(connection_id, token);
+            break;
+        case 'ISSUE':
+            _machine.dispatch('cancel');
+            machines.set(connection_id, _machine);
+            break;
+        }
+        console.log(_machine);
+        break;
+        
+    }
+    case '/topic/issue_credential/': {
+        const {content, connection_id, message_id, state, credential_exchange_id} = event;
+        let _machine;
+        if(!machines.get(connection_id)){
+            _machine = Object.create(machine);
+        }else{
+            _machine = machines.get(connection_id);
+        }
+        switch(_machine.state){
+        case 'ISSUE':
+            console.log('issue credential stuff');
+            if(state==='request_received'){
+                await issue(credential_exchange_id, token);
+                _machine.dispatch('done');
+                machines.set(connection_id,_machine);
+            }else{
+                console.log('waiting for cred request');
+            }
+            break;
+        }
+        console.log(event);
+        break;
+    }
+    default:
+        break;
+    }
+}
+
 app.use('/webhook', async(req,res,next) => {
     console.log('received something', req);
     const walletId = req.get('x-wallet-id');
     console.log('body', req.body);
+    const token = req.session.token;
     //const data = JSON.parse(req.body);
     console.log('origURL', req.originalUrl);
     console.log('path', req.path);
     console.log('wallet: ', walletId);
+    stateLoop(req.body, req.path, token)
     events.send('new', {type: req.path, data:req.body});
     res.status(200).send();
     next();

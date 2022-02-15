@@ -364,4 +364,33 @@ export const createConnectionInvitation = async (token, autoAccept = false) => {
     return json;
 }
 
+export const sendProofRequest = async (connection_id, token) => {
+    let now = new Date().getTime();
+    let from = now - 7*24*60*60*1000;
+    const response = await fetch(`${AGENCY_URL}/present-proof/send-request`, {
+        method: 'POST',
+        body: JSON.stringify({
+            "comment": "present identity",
+            "connection_id": connection_id,
+            "nonce": "54321",
+            "proof_request": {
+                "name": "Proof request",
+                "requested_attributes": {
+                    "additionalProp1": {
+                        "name": "ssn",
+                        "non_revoked": {
+                            "from": from,
+                            "to": now
+                        }
+                    }
+                }
+            }
+        }),
+        headers: {
+            'Authorization': `Bearer ${token}`
+        }
+    });
+    console.log('proof request response', response);
+}
+
 export default apiRouter;
