@@ -273,7 +273,7 @@ const main = async(req) => {
     }
     /** check for wallet info in req session */
     let all_wallet_info;
-    if(!req.session.wallet_info){
+    if(!req.session.wallet_info && existing_wallet){
         console.log('set wallet info in session');
         all_wallet_info = await getWallet(existing_wallet.wallet_id);
         req.session.wallet_info = all_wallet_info;
