@@ -281,13 +281,14 @@ const main = async(req) => {
         console.log('get wallet info in session');
         all_wallet_info = req.session.wallet_info;
     }
-
-    const webhook_urls:string[] = all_wallet_info.settings['wallet.webhook_urls'];
-    console.log('wallet_webhooks, no update', webhook_urls);
-    if(webhook_urls.length === 0 || webhook_urls.indexOf(`${webhook_env}`) === -1){
-        updateWallet(existing_wallet.wallet_id);
-        const webhook_urls = all_wallet_info.settings['wallet.webhook_urls'];
-        console.log('wallet_webhooks after update', webhook_urls);
+    if(all_wallet_info){
+        const webhook_urls:string[] = all_wallet_info.settings['wallet.webhook_urls'];
+        console.log('wallet_webhooks, no update', webhook_urls);
+        if(webhook_urls.length === 0 || webhook_urls.indexOf(`${webhook_env}`) === -1){
+            updateWallet(existing_wallet.wallet_id);
+            const webhook_urls = all_wallet_info.settings['wallet.webhook_urls'];
+            console.log('wallet_webhooks after update', webhook_urls);
+        }
     }
 
     /** rest of init logic */
