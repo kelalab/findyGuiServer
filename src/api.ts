@@ -406,6 +406,8 @@ export const sendProofRequest = async (connection_id, schema_name, token) => {
                             "to": now
                         }
                     }
+                },
+                "requested_predicates":{
                 }
             },
             "trace": false
