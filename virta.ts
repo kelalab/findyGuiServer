@@ -71,7 +71,7 @@ const machine = {
         },
         REQUEST_PROOF: {
             ok() {
-               this.state = 'ISSUE'
+                this.state = 'ISSUE'
             },
             fail(){
                 this.state = 'IDLE'
@@ -345,7 +345,6 @@ const main = async(req) => {
         let token;
         let walletid;
         if(existing_wallet){
-            const all_wallet_info = await getWallet(existing_wallet.wallet_id);
             walletid = existing_wallet.wallet_id;
             const wallet_id = existing_wallet.wallet_id;
             token = await getToken(wallet_id);
@@ -415,7 +414,7 @@ const stateLoop = async(event, path, token) => {
         console.log('content', content);
         switch(_machine.state){
         case 'IDLE':
-            await sendMessage(connection_id, 'Kuinka voin auttaa? Olen vain esimerkkitoteutus identiteetintarjoajasta, joten voin tarjota sinulle mock-identiteetin jos vastaat tähän viestiin "1"', token);
+            await sendMessage(connection_id, 'Kuinka voin auttaa? Olen vain esimerkkitoteutus opiskelijatietokannasta, joten voin tarjota sinulle mock-opiskelijatunnuksen henkilöllisyystodistusta vastaan jos vastaat tähän viestiin "1"', token);
             // start listening
             _machine.dispatch('listen');
             machines.set(connection_id,_machine);
