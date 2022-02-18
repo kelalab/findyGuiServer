@@ -430,6 +430,7 @@ export const sendProofRequest = async (connection_id, schema_name, token) => {
  */
 export const verifyProof = async(credential_exchange_id, token) => {
     const resp = await fetch(`${AGENCY_URL}/present-proof/records/${credential_exchange_id}/verify-presentation`, {
+        method: 'POST',
         headers: {
             'Authorization': `Bearer ${token}`,
             'Content-type': 'application/json'
