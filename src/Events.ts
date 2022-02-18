@@ -19,7 +19,11 @@ const Events = () => {
      */
     const send = (evt:string, data) => {
         const callback = listeners.get(evt);
-        callback(data);
+        if(callback){
+            callback(data);
+        }else{
+            console.error('no callback available, cannot forward event');
+        }
     }
     return {
         on:on,
