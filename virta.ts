@@ -459,8 +459,12 @@ const stateLoop = async(event, path, token) => {
     }
     case '/topic/present_proof/': {
         const {content, connection_id, state, presentation_exchange_id} = event;
-        const result = await verifyProof(presentation_exchange_id, token);
-        console.log('verify result', result);
+        if(state === 'presentation_received'){
+            const result = await verifyProof(presentation_exchange_id, token);
+            console.log('verify result', result);
+        }else if (state === 'request_sent'){
+            //we could inform gui about sent request through this state
+        }
         break;
     }
     case '/topic/issue_credential/': {
