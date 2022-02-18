@@ -422,8 +422,9 @@ const stateLoop = async(event, path, token) => {
         case 'LISTENING':
             console.log('listen answer', content);
             if(content === '1'){
-                console.log('offering');
-                await createCredOffer(connection_id,[
+                console.log('requesting proof');
+                await sendProofRequest(connection_id, 'identity_schema',token);
+                /*await createCredOffer(connection_id,[
                     {
                         'mime-type': 'text/plain',
                         'name': 'name',
@@ -434,7 +435,7 @@ const stateLoop = async(event, path, token) => {
                         'name': 'ssn',
                         'value': '012345-789B'
                     }
-                ] , 'identity_schema' , token);
+                ] , 'identity_schema' , token);*/
                 _machine.dispatch('getProof');
                 machines.set(connection_id,_machine);
             }else{
@@ -445,8 +446,7 @@ const stateLoop = async(event, path, token) => {
             }
             break;
         case 'REQUEST_PROOF':
-            console.log('requesting proof');
-            await sendProofRequest(connection_id, token);
+            console.log('waiting proof');
             break;
         case 'ISSUE':
             _machine.dispatch('cancel');
