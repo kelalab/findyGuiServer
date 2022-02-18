@@ -373,14 +373,17 @@ export const sendProofRequest = async (connection_id, token) => {
             "comment": "present identity",
             "connection_id": connection_id,
             "nonce": "54321",
-            "proof_request": {
-                "name": "Proof request",
-                "requested_attributes": {
-                    "additionalProp1": {
-                        "name": "ssn",
-                        "non_revoked": {
-                            "from": from,
-                            "to": now
+            "presentation_request": {
+                "indy": {
+                    "name": "Proof of identity",
+                    "version": "1.0",
+                    "requested_attributes": {
+                        "0_ssn": {
+                            "name": "ssn",
+                            "non_revoked": {
+                                "from": from,
+                                "to": now
+                            }
                         }
                     }
                 }
