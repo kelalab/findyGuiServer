@@ -364,7 +364,24 @@ export const createConnectionInvitation = async (token, autoAccept = false) => {
     return json;
 }
 
-export const sendProofRequest = async (connection_id, token) => {
+export const sendProofRequest = async (connection_id, schema_name, token) => {
+    const cred_defs:any = await getCredDefs(token);
+    console.log('--- credential_definitions', cred_defs);
+    //check definitions to find the one to be used
+    let idx = 0;
+    for(const id of cred_defs.credential_definition_ids){
+        const cred_def = await getCredDefs(token, id);
+        const schema:any = await getSchemas(token, cred_def.credential_definition.schemaId);
+        console.log('schema', schema);
+        console.log('cred_def', cred_def);
+        // if schema name used by cred_def equals provided, we can break off the loop
+        if(schema.name === schema_name){
+            break;
+        }
+        
+        idx++;
+    }
+    const cred_def_id = cred_defs.credential_definition_ids[idx];
     let now = new Date().getTime();
     let from = now - 7*24*60*60*1000;
     const response = await fetch(`${AGENCY_URL}/present-proof/send-request`, {
@@ -380,6 +397,11 @@ export const sendProofRequest = async (connection_id, token) => {
                     "requested_attributes": {
                         "0_ssn": {
                             "name": "ssn",
+                            "restrictions": [
+                                {
+                                    "cred_def_id": cred_def_id
+                                }
+                            ],
                             "non_revoked": {
                                 "from": from,
                                 "to": now
