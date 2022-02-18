@@ -422,4 +422,19 @@ export const sendProofRequest = async (connection_id, schema_name, token) => {
     console.log('proof request json', json);
 }
 
+/**
+ * Verify an incoming proof
+ * @param credential_exchange_id 
+ * @param token 
+ * @returns 
+ */
+export const verifyProof = async(credential_exchange_id, token) => {
+    const resp = await fetch(`${AGENCY_URL}/present-proof/records/${credential_exchange_id}/verify-presentation`, {
+        headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-type': 'application/json'
+        }});
+    return resp.json();
+}
+
 export default apiRouter;

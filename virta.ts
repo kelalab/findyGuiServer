@@ -4,7 +4,7 @@ import process from 'process';
 import {fileURLToPath} from 'url';
 import {dirname} from 'path';
 import { createServer } from 'http';
-import apiRouter, { createCredOffer, issue, sendMessage, sendProofRequest } from './src/api.js';
+import apiRouter, { createCredOffer, issue, sendMessage, sendProofRequest, verifyProof } from './src/api.js';
 import { Server } from 'socket.io';
 import socket from './websocket.js';
 import fetch from 'node-fetch';
@@ -456,6 +456,12 @@ const stateLoop = async(event, path, token) => {
         console.log(_machine);
         break;
         
+    }
+    case '/topic/present_proof/': {
+        const {content, connection_id, state, presentation_exchange_id} = event;
+        const result = await verifyProof(presentation_exchange_id, token);
+        console.log('verify result', result);
+        break;
     }
     case '/topic/issue_credential/': {
         const {content, connection_id, message_id, state, credential_exchange_id} = event;
