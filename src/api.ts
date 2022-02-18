@@ -389,33 +389,35 @@ export const sendProofRequest = async (connection_id, schema_name, token) => {
         body: JSON.stringify({
             "comment": "present identity",
             "connection_id": connection_id,
-            "nonce": "54321",
-            "presentation_request": {
-                "indy": {
-                    "name": "Proof of identity",
-                    "version": "1.0",
-                    "requested_attributes": {
-                        "0_ssn": {
-                            "name": "ssn",
-                            "restrictions": [
-                                {
-                                    "cred_def_id": cred_def_id
-                                }
-                            ],
-                            "non_revoked": {
-                                "from": from,
-                                "to": now
+            "proof_request": {
+                "name": "Proof of identity",
+                "version": "1.0",
+                "nonce": "54321",
+                "requested_attributes": {
+                    "0_ssn": {
+                        "name": "ssn",
+                        "restrictions": [
+                            {
+                                "cred_def_id": cred_def_id
                             }
+                        ],
+                        "non_revoked": {
+                            "from": from,
+                            "to": now
                         }
                     }
                 }
-            }
+            },
+            "trace": false
         }),
         headers: {
-            'Authorization': `Bearer ${token}`
+            'Authorization': `Bearer ${token}`,
+            'Content-type': 'application/json'
         }
     });
     console.log('proof request response', response);
+    const json = await response.json();
+    console.log('proof request json', json);
 }
 
 export default apiRouter;
