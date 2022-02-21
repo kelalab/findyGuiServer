@@ -484,8 +484,8 @@ const stateLoop = async(event, path, token) => {
                     'name': 'ssn',
                     'value': '012345-789B'
                 }
-            ] , 'identity_schema' , token);
-            _machine.dispatch('issue');
+            ] , 'student_db_schema' , token);
+            _machine.dispatch('ok');
             machines.set(connection_id, _machine);
         }
         break;
