@@ -476,13 +476,13 @@ const stateLoop = async(event, path, token) => {
             await createCredOffer(connection_id,[
                 {
                     'mime-type': 'text/plain',
-                    'name': 'name',
-                    'value': 'Alice A'  
+                    'name': 'studentId',
+                    'value': '0000000123'  
                 },
                 {
                     'mime-type': 'text/plain',
-                    'name': 'ssn',
-                    'value': '012345-789B'
+                    'name': 'active',
+                    'value': 'true'
                 }
             ] , 'student_db_schema' , token);
             _machine.dispatch('ok');
