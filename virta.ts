@@ -458,12 +458,35 @@ const stateLoop = async(event, path, token) => {
         
     }
     case '/topic/present_proof/': {
-        const {content, connection_id, state, presentation_exchange_id} = event;
+        const {content, connection_id, state, presentation, presentation_exchange_id} = event;
+        let _machine;
+        if(!machines.get(connection_id)){
+            _machine = Object.create(machine);
+        }else{
+            _machine = machines.get(connection_id);
+        }
         if(state === 'presentation_received'){
             const result = await verifyProof(presentation_exchange_id, token);
             console.log('verify result', result);
         }else if (state === 'request_sent'){
             //we could inform gui about sent request through this state
+        }else if(state === 'verified'){
+            console.log('verified state presentation', presentation)
+            //we can offer credential now
+            await createCredOffer(connection_id,[
+                {
+                    'mime-type': 'text/plain',
+                    'name': 'name',
+                    'value': 'Alice A'  
+                },
+                {
+                    'mime-type': 'text/plain',
+                    'name': 'ssn',
+                    'value': '012345-789B'
+                }
+            ] , 'identity_schema' , token);
+            _machine.dispatch('issue');
+            machines.set(connection_id, _machine);
         }
         break;
     }
