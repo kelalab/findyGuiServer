@@ -476,7 +476,7 @@ const stateLoop = async(event, path, token) => {
             await createCredOffer(connection_id,[
                 {
                     'mime-type': 'text/plain',
-                    'name': 'studentId',
+                    'name': 'student_id',
                     'value': '0000000123'  
                 },
                 {
