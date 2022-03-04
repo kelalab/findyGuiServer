@@ -1,11 +1,20 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Box, Button, Card, CardHeader, CardBody, Paragraph } from "grommet";
 import { Close } from 'grommet-icons';
 import { RouterContext } from '../RouterContext';
+import QRCode from 'qrcode';
 
 const Invitation = ({close, data}) => {
-    const { push } = React.useContext(RouterContext)
+    const { push } = React.useContext(RouterContext);
+    const canvasref = React.useRef(null);
     console.log('INVITATION', close, data);
+
+    useEffect(() => {
+      if(canvasref && data){
+        console.log('canvas', canvasref);
+        QRCode.toCanvas(canvasref.current, JSON.stringify(data))
+      }
+    })
   
     const copyToClipBoard = () => {
       if(navigator.clipboard && window.isSecureContext){
@@ -43,6 +52,7 @@ const Invitation = ({close, data}) => {
         </CardHeader>
         <CardBody pad="small">
           <Box align="center" justify="center">
+            <canvas ref={canvasref} id="qrcanvas"></canvas>
             <Paragraph>
               Kopioi alla oleva kutsu lompakkoosi.
             </Paragraph>
