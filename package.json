@@ -5,6 +5,7 @@
         "dev_all": "concurrently \"npm run dev_front\" \"npm run dev port=3000\" ",
         "dev": "nodemon index.ts ",
         "virta": "nodemon virta.ts",
+        "idp": "nodemon identityprovider.ts",
         "dev_virta": "concurrently \"cd virta && npm run start\" \"npm run virta port=4000 AGENCY_URL=http://localhost:8080 VON_WEBSERVER_URL=http://findy.local:80/von\" ",
         "dev_virta_az": "concurrently \"cd virta && npm run start\" \"npm run virta port=4000 AGENCY_URL=http://localhost:8080 VON_WEBSERVER_URL=https://hiekkalaatikko.northeurope.cloudapp.azure.com/von\" ",
         "dockerbuildendorser": "docker build -f Dockerfile_endorser -t virta --progress=plain .",
