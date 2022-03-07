@@ -2,5 +2,5 @@
     "execMap": {
         "ts": "node --loader ts-node/esm"
     },
-    "ignore": ["**/front/**", "virta/*.*"] 
+    "ignore": ["**/front/**", "virta/*.*", "idp/*.*"] 
 }
