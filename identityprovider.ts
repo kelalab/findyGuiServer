@@ -475,7 +475,7 @@ app.use('/webhook', async(req,res,next) => {
 
 
 /** idp does not need a gui so we need not to send events anywhere */
-/*app.use('/events', async(req,res,next) =>{
+app.use('/events', async(req,res,next) =>{
     res.set({
         'Cache-Control': 'no-cache',
         'Content-Type': 'text/event-stream',
@@ -487,7 +487,7 @@ app.use('/webhook', async(req,res,next) => {
         console.log('SENDING EVENT TO CLIENT', data);
         res.write(`data: ${JSON.stringify(data)} \n\n`)
     });
-});*/
+});
 
 app.get('/', (req, res) => {
     res.sendFile(dirname(fileURLToPath(import.meta.url))+'/idp/index.html');
